@@ -1,13 +1,13 @@
-# 🚀 ResuméAI — Complete Deployment Guide
+# 🚀 ResumePro — Complete Deployment Guide
 
 ## What's Inside This Project
 
 ```
-resumeai/
+resumepro/
 ├── app/
 │   ├── layout.jsx              ← Root layout (fonts, metadata)
 │   ├── globals.css             ← Global styles
-│   ├── page.jsx                ← Landing page (resumeai.in/)
+│   ├── page.jsx                ← Landing page (resumepro.in/)
 │   ├── builder/
 │   │   └── page.jsx            ← Resume builder app (/builder)
 │   └── api/
@@ -30,8 +30,8 @@ Verify: `node --version` should show v18 or higher
 
 ### Step 2 — Set up the project
 ```bash
-# 1. Copy this entire resumeai/ folder to your computer
-# 2. Open terminal in the resumeai/ folder, then:
+# 1. Copy this entire resumepro/ folder to your computer
+# 2. Open terminal in the resumepro/ folder, then:
 
 npm install
 ```
@@ -62,25 +62,25 @@ Go to https://github.com and sign up (free)
 
 ### Step 2 — Upload your code to GitHub
 ```bash
-# In the resumeai/ folder:
+# In the resumepro/ folder:
 git init
 git add .
-git commit -m "Initial ResuméAI commit"
+git commit -m "Initial ResumePro commit"
 ```
 
 Then:
 1. Go to github.com → Click "+" → "New repository"
-2. Name it `resumeai` → Click "Create repository"
+2. Name it `resumepro` → Click "Create repository"
 3. Copy the commands GitHub shows you (the ones with `git remote add origin...`)
 4. Paste and run them in your terminal
 
 ### Step 3 — Deploy on Vercel
 1. Go to https://vercel.com → Sign up with GitHub
 2. Click **"Add New Project"**
-3. Click **"Import"** next to your `resumeai` repository
+3. Click **"Import"** next to your `resumepro` repository
 4. Click **"Deploy"** — Vercel builds it automatically!
 
-✅ Your app is now live at: `https://resumeai.vercel.app`
+✅ Your app is now live at: `https://resumepro.vercel.app`
 
 ### Step 4 — Add Environment Variables on Vercel
 This is important — your API keys need to be added to Vercel too:
@@ -109,14 +109,14 @@ Recommended for India:
 - **Namecheap**: namecheap.com (~$10/year for .com)
 
 Good domain ideas:
-- `resumeai.in`
+- `resumepro.in`
 - `airesumepro.in`
-- `myresumeai.in`
+- `myresumepro.in`
 - `resumebuilder.co.in`
 
 ### Connect domain to Vercel
 1. In Vercel → Your Project → **Settings** → **Domains**
-2. Type your domain (e.g. `resumeai.in`) → Click **Add**
+2. Type your domain (e.g. `resumepro.in`) → Click **Add**
 3. Vercel shows you 2 DNS records like:
    ```
    Type: A     Name: @     Value: 76.76.21.21
@@ -124,7 +124,7 @@ Good domain ideas:
    ```
 4. Go to GoDaddy → **My Domains** → **DNS** → Add those records
 5. Wait 10–30 minutes
-6. Visit `resumeai.in` — it works! ✅
+6. Visit `resumepro.in` — it works! ✅
 
 ---
 
@@ -169,7 +169,7 @@ Test UPI ID: success@razorpay
 
 ### Free Marketing (Do This First!)
 1. **WhatsApp Groups** — Share in college alumni groups, placement groups
-   > "Built an AI resume builder! Try it free: resumeai.in — Only ₹199 to download"
+   > "Built an AI resume builder! Try it free: resumepro.in — Only ₹199 to download"
 
 2. **LinkedIn Post** — Post about your product, tag college friends
 
@@ -243,4 +243,4 @@ If you're stuck at any step:
 ---
 
 *Built with Next.js 14, Claude AI (Anthropic), Razorpay, jsPDF, and docx.js*
-*© 2025 ResuméAI — Made with ❤️ in India*
+*© 2025 ResumePro — Made with ❤️ in India*

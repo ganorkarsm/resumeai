@@ -1,11 +1,11 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "ResuméAI — Build an ATS-Optimized Resume in 5 Minutes",
+  title: "ResuméPro — Build an ATS-Optimized Resume in 5 Minutes",
   description: "AI-powered resume builder for Indian job seekers. Get ATS score, AI suggestions, 5 professional templates. Download PDF + Word for just ₹199. Powered by Claude AI.",
   keywords: "resume builder india, ATS resume, AI resume, resume for freshers, job resume india, ₹199 resume",
   openGraph: {
-    title: "ResuméAI — AI Resume Builder for India",
+    title: "ResuméPro — AI Resume Builder for India",
     description: "Build a job-winning resume in 5 minutes. ATS score, 5 templates, PDF + Word. ₹199 one-time.",
     type: "website",
   },

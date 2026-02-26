@@ -649,7 +649,7 @@ export default function Builder() {
       const options={
         key:process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount,currency:"INR",
-        name:"ResuméAI Professional",
+        name:"ResumePro Professional",
         description:"ATS-Optimized Resume Download",
         order_id,
         prefill:{name:data.personal.name,email:data.personal.email,contact:data.personal.phone},
@@ -694,7 +694,7 @@ export default function Builder() {
         <nav className="topbar">
           <Link href="/" className="brand">
             <div className="brand-icon">R</div>
-            <span className="brand-name">Resumé<span>AI</span></span>
+            <span className="brand-name">Resume<span>Pro</span></span>
           </Link>
           <div className="topbar-mid">
             {STEPS.map((s,i)=>(

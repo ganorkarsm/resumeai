@@ -28,7 +28,7 @@ export async function POST(req) {
       receipt:         `rcpt_${crypto.randomBytes(8).toString("hex")}`,
       payment_capture: 1, // Auto-capture payment
       notes: {
-        product:  "ResuméAI Download",
+        product:  "ResumePro Download",
         template: notes.template || "modern",
         user:     notes.user     || "anonymous",
         ...notes,

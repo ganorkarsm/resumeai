@@ -52,7 +52,7 @@ export async function POST(req) {
     // e.g., await db.payments.create({ payment_id, order_id, amount: 19900 });
 
     // TODO: Send confirmation email here
-    // e.g., await sendEmail({ to: user.email, subject: "Your ResuméAI Download" });
+    // e.g., await sendEmail({ to: user.email, subject: "Your ResumePro Download" });
 
     return NextResponse.json({
       verified:   true,

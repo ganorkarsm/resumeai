@@ -20,10 +20,10 @@ function useCounter(target, duration = 2000, start = false) {
 }
 
 const TESTIMONIALS = [
-  { name: "Priya Sharma", role: "Fresher → TCS", avatar: "PS", text: "Got my first job offer within 2 weeks of using ResuméAI. The ATS score went from 54 to 89!", rating: 5 },
+  { name: "Priya Sharma", role: "Fresher → TCS", avatar: "PS", text: "Got my first job offer within 2 weeks of using ResumePro. The ATS score went from 54 to 89!", rating: 5 },
   { name: "Rahul Mehta", role: "3 yrs exp → Infosys", avatar: "RM", text: "The AI rewrote my bullet points so well, HR called me the same day I applied. Worth every rupee.", rating: 5 },
   { name: "Anjali Nair", role: "MBA → HDFC Bank", avatar: "AN", text: "The Elegant template looked so professional. I got 4 interview calls in one week. Amazing tool!", rating: 5 },
-  { name: "Vikram Singh", role: "5 yrs → Amazon", avatar: "VS", text: "Switched from a generic resume to ResuméAI. The ATS suggestions alone doubled my callback rate.", rating: 5 },
+  { name: "Vikram Singh", role: "5 yrs → Amazon", avatar: "VS", text: "Switched from a generic resume to ResumePro. The ATS suggestions alone doubled my callback rate.", rating: 5 },
 ];
 
 const FEATURES = [
@@ -45,7 +45,7 @@ const STEPS = [
 const FAQS = [
   { q: "Is ₹199 a one-time payment or subscription?", a: "Completely one-time. You pay ₹199 once and download both PDF and Word formats of your resume. No monthly fees, no hidden charges, no subscriptions — ever." },
   { q: "What is an ATS score and why does it matter?", a: "ATS (Applicant Tracking System) is software used by 90%+ of companies to auto-filter resumes before a human even sees them. A low ATS score means your resume gets rejected automatically. Our AI optimizes your resume to pass these filters." },
-  { q: "Is this useful for freshers with no experience?", a: "Absolutely! ResuméAI is designed for both freshers and experienced professionals. For freshers, it helps highlight projects, internships, and skills effectively. The Simple and Modern templates work great for entry-level positions." },
+  { q: "Is this useful for freshers with no experience?", a: "Absolutely! ResumePro is designed for both freshers and experienced professionals. For freshers, it helps highlight projects, internships, and skills effectively. The Simple and Modern templates work great for entry-level positions." },
   { q: "Can I edit the resume after downloading?", a: "Yes! The Word (.docx) file is fully editable in Microsoft Word, Google Docs, or LibreOffice. Make any changes you want after downloading." },
   { q: "Is my data safe and private?", a: "Yes. Your resume data is used only to generate your resume during your session. We do not store your personal information on our servers." },
   { q: "Which payment methods are supported?", a: "We use Razorpay — India's most trusted payment gateway. You can pay via UPI (GPay, PhonePe, Paytm), Credit/Debit cards, Netbanking, or Wallets." },
@@ -296,7 +296,7 @@ export default function LandingPage() {
       <nav className="nav">
         <Link href="/" className="nav-brand">
           <div className="nav-logo">R</div>
-          <span className="nav-name">Resumé<span>AI</span></span>
+          <span className="nav-name">Resume<span>Pro</span></span>
         </Link>
         <div className="nav-links">
           <a href="#features" className="nav-link">Features</a>
@@ -338,7 +338,7 @@ export default function LandingPage() {
               <div className="mockup-dot" style={{ background: "#ff5f57" }} />
               <div className="mockup-dot" style={{ background: "#febc2e" }} />
               <div className="mockup-dot" style={{ background: "#28c840" }} />
-              <div className="mockup-url">resumeai.in/builder</div>
+              <div className="mockup-url">resumepro.in/builder</div>
             </div>
             <div className="mockup-body">
               <div className="mockup-panel">
@@ -392,7 +392,7 @@ export default function LandingPage() {
       {/* FEATURES */}
       <section className="section" id="features">
         <div className="section-inner">
-          <div className="section-tag">Why ResuméAI</div>
+          <div className="section-tag">Why ResumePro</div>
           <h2 className="section-title">Everything You Need to<br /><em>Land Your Dream Job</em></h2>
           <p className="section-sub">Built specifically for the Indian job market — from freshers applying to TCS, to experienced professionals targeting MNCs and startups.</p>
           <div className="features-grid">
@@ -550,7 +550,7 @@ export default function LandingPage() {
       {/* CTA BANNER */}
       <section className="cta-banner">
         <h2>Your Dream Job Is<br /><em>One Resume Away</em></h2>
-        <p>Join 12,000+ job seekers who landed interviews with ResuméAI.<br />Build yours in 5 minutes. Pay only if you love it.</p>
+        <p>Join 12,000+ job seekers who landed interviews with ResumePro.<br />Build yours in 5 minutes. Pay only if you love it.</p>
         <div className="cta-banner-btns">
           <Link href="/builder" className="btn-primary" style={{ fontSize: 16, padding: "18px 40px" }}>✨ Build My Resume Now →</Link>
         </div>
@@ -566,7 +566,7 @@ export default function LandingPage() {
       <footer className="footer">
         <div className="footer-brand">
           <div className="footer-logo">R</div>
-          <span className="footer-name">ResuméAI</span>
+          <span className="footer-name">ResumePro</span>
         </div>
         <div className="footer-links">
           <Link href="/builder" className="footer-link">Builder</Link>
@@ -574,7 +574,7 @@ export default function LandingPage() {
           <a href="#pricing" className="footer-link">Pricing</a>
           <a href="#faq" className="footer-link">FAQ</a>
         </div>
-        <div className="footer-copy">© 2025 ResuméAI · Made with ❤️ in India</div>
+        <div className="footer-copy">© 2025 ResumePro · Made with ❤️ in India</div>
       </footer>
     </>
   );
