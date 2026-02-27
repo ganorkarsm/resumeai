@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ResumePro — Coming Soon</title>
+  <meta name="description" content="AI-powered resume builder for India. Coming soon."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink: #0a0a0f;
+      --ink2: #3d3d4f;
+      --ink3: #8888a0;
+      --primary: #2563EB;
+      --accent: #7C3AED;
+      --gold: #D97706;
+      --surface: #f7f7fb;
+      --border: rgba(0,0,0,0.07);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #f7f7fb;
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ── BACKGROUND ── */
+    .bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .bg-circle {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.5;
+      animation: float 8s ease-in-out infinite;
+    }
+
+    .bg-c1 {
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(37,99,235,0.18), transparent);
+      top: -200px; left: -100px;
+      animation-delay: 0s;
+    }
+    .bg-c2 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(124,58,237,0.14), transparent);
+      bottom: -150px; right: -80px;
+      animation-delay: -3s;
+    }
+    .bg-c3 {
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(217,119,6,0.10), transparent);
+      top: 50%; left: 55%;
+      animation-delay: -5s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(20px, -30px) scale(1.05); }
+      66% { transform: translate(-15px, 20px) scale(0.97); }
+    }
+
+    /* Grid pattern overlay */
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background-image:
+        linear-gradient(rgba(37,99,235,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(37,99,235,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+
+    /* ── CONTENT ── */
+    .container {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 40px 24px;
+      max-width: 680px;
+      width: 100%;
+    }
+
+    /* LOGO */
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 56px;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .logo-icon {
+      width: 48px; height: 48px;
+      background: linear-gradient(135deg, #2563EB, #7C3AED);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Fraunces', serif;
+      font-size: 24px;
+      font-weight: 900;
+      color: #fff;
+      box-shadow: 0 8px 24px rgba(37,99,235,0.3);
+    }
+
+    .logo-name {
+      font-family: 'Fraunces', serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -0.5px;
+    }
+
+    .logo-name span { color: var(--primary); }
+
+    /* BADGE */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: #fff;
+      border: 1.5px solid #dbeafe;
+      border-radius: 20px;
+      padding: 6px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--primary);
+      letter-spacing: 0.3px;
+      margin-bottom: 28px;
+      box-shadow: 0 2px 12px rgba(37,99,235,0.08);
+      animation: fadeUp 0.6s ease 0.1s both;
+    }
+
+    .badge-dot {
+      width: 7px; height: 7px;
+      background: var(--primary);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.7); }
+    }
+
+    /* HEADLINE */
+    h1 {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(44px, 8vw, 80px);
+      font-weight: 900;
+      line-height: 1.0;
+      letter-spacing: -3px;
+      color: var(--ink);
+      margin-bottom: 20px;
+      animation: fadeUp 0.6s ease 0.2s both;
+    }
+
+    h1 em {
+      font-style: italic;
+      color: var(--primary);
+    }
+
+    h1 .line2 {
+      display: block;
+      color: var(--ink);
+    }
+
+    .subtitle {
+      font-size: clamp(15px, 2.5vw, 18px);
+      color: var(--ink3);
+      line-height: 1.7;
+      max-width: 480px;
+      margin-bottom: 52px;
+      font-weight: 400;
+      animation: fadeUp 0.6s ease 0.3s both;
+    }
+
+    /* COUNTDOWN */
+    .countdown-wrap {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      margin-bottom: 52px;
+      animation: fadeUp 0.6s ease 0.4s both;
+    }
+
+    .count-box {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 20px 22px;
+      min-width: 84px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .count-box::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+    }
+
+    .count-num {
+      font-family: 'Fraunces', serif;
+      font-size: 40px;
+      font-weight: 900;
+      color: var(--ink);
+      line-height: 1;
+      letter-spacing: -2px;
+      margin-bottom: 4px;
+    }
+
+    .count-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--ink3);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+
+    /* EMAIL FORM */
+    .notify-wrap {
+      width: 100%;
+      max-width: 440px;
+      animation: fadeUp 0.6s ease 0.5s both;
+      margin-bottom: 48px;
+    }
+
+    .notify-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink2);
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .notify-form {
+      display: flex;
+      gap: 8px;
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 5px 5px 5px 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .notify-form:focus-within {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(37,99,235,0.08);
+    }
+
+    .notify-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      color: var(--ink);
+      background: transparent;
+      padding: 8px 0;
+    }
+
+    .notify-input::placeholder { color: var(--ink3); }
+
+    .notify-btn {
+      background: linear-gradient(135deg, #2563EB, #7C3AED);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 11px 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .notify-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(37,99,235,0.3);
+    }
+
+    .notify-note {
+      font-size: 11px;
+      color: var(--ink3);
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    /* SUCCESS STATE */
+    .notify-success {
+      display: none;
+      background: #f0fdf4;
+      border: 1.5px solid #bbf7d0;
+      border-radius: 12px;
+      padding: 14px 20px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #065f46;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    /* FEATURES */
+    .features {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      animation: fadeUp 0.6s ease 0.6s both;
+      margin-bottom: 48px;
+    }
+
+    .feat-pill {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      padding: 7px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink2);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .feat-icon { font-size: 14px; }
+
+    /* FOOTER */
+    .footer-note {
+      font-size: 12px;
+      color: var(--ink3);
+      animation: fadeUp 0.6s ease 0.7s both;
+    }
+
+    .footer-note strong {
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    /* FLOATING RESUME MOCKUP */
+    .mockup {
+      position: fixed;
+      right: -60px;
+      top: 50%;
+      transform: translateY(-50%) rotate(8deg);
+      width: 260px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.15);
+      overflow: hidden;
+      opacity: 0.5;
+      pointer-events: none;
+      animation: mockupFloat 6s ease-in-out infinite;
+      z-index: 0;
+    }
+
+    @media(max-width: 900px) { .mockup { display: none; } }
+
+    .mockup-hdr {
+      background: linear-gradient(135deg, #1e3a5f, #2563eb);
+      padding: 14px;
+    }
+
+    .mockup-line {
+      height: 6px;
+      border-radius: 3px;
+      margin-bottom: 5px;
+    }
+
+    .mockup-body {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    @keyframes mockupFloat {
+      0%, 100% { transform: translateY(-50%) rotate(8deg); }
+      50% { transform: translateY(calc(-50% - 12px)) rotate(6deg); }
+    }
+
+    /* Left mockup */
+    .mockup-left {
+      position: fixed;
+      left: -80px;
+      top: 40%;
+      transform: translateY(-50%) rotate(-10deg);
+      width: 220px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.12);
+      overflow: hidden;
+      opacity: 0.35;
+      pointer-events: none;
+      animation: mockupFloat2 7s ease-in-out infinite;
+      z-index: 0;
+    }
+
+    @media(max-width: 900px) { .mockup-left { display: none; } }
+
+    @keyframes mockupFloat2 {
+      0%, 100% { transform: translateY(-50%) rotate(-10deg); }
+      50% { transform: translateY(calc(-50% + 10px)) rotate(-8deg); }
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Background -->
+  <div class="bg">
+    <div class="bg-circle bg-c1"></div>
+    <div class="bg-circle bg-c2"></div>
+    <div class="bg-circle bg-c3"></div>
+  </div>
+  <div class="bg-grid"></div>
+
+  <!-- Floating Resume Mockups -->
+  <div class="mockup">
+    <div class="mockup-hdr">
+      <div class="mockup-line" style="background:rgba(255,255,255,0.85);width:55%"></div>
+      <div class="mockup-line" style="background:rgba(255,255,255,0.4);width:35%"></div>
+      <div class="mockup-line" style="background:rgba(255,255,255,0.25);width:70%;margin-top:6px"></div>
+    </div>
+    <div class="mockup-body">
+      <div style="height:5px;background:#e2e8f0;border-radius:3px;width:40%;margin-bottom:4px"></div>
+      <div style="height:4px;background:#e2e8f0;border-radius:3px;width:90%"></div>
+      <div style="height:4px;background:#e2e8f0;border-radius:3px;width:75%"></div>
+      <div style="height:4px;background:#e2e8f0;border-radius:3px;width:85%"></div>
+      <div style="height:5px;background:#e2e8f0;border-radius:3px;width:40%;margin:6px 0 4px"></div>
+      <div style="height:4px;background:#e2e8f0;border-radius:3px;width:80%"></div>
+      <div style="height:4px;background:#e2e8f0;border-radius:3px;width:65%"></div>
+      <div style="height:4px;background:#e2e8f0;border-radius:3px;width:90%"></div>
+      <div style="height:4px;background:#e2e8f0;border-radius:3px;width:70%"></div>
+    </div>
+  </div>
+
+  <div class="mockup-left">
+    <div style="background:linear-gradient(135deg,#1a1a2e,#7C3AED);padding:12px">
+      <div style="height:6px;background:rgba(255,255,255,0.8);border-radius:3px;width:55%;margin-bottom:4px"></div>
+      <div style="height:3px;background:#D4A853;border-radius:2px;width:35%"></div>
+    </div>
+    <div style="padding:10px;display:flex;flex-direction:column;gap:3px">
+      <div style="height:4px;background:#e2e8f0;border-radius:3px;width:85%"></div>
+      <div style="height:4px;background:#e2e8f0;border-radius:3px;width:70%"></div>
+      <div style="height:4px;background:#e2e8f0;border-radius:3px;width:90%"></div>
+      <div style="height:4px;background:#e2e8f0;border-radius:3px;width:60%"></div>
+      <div style="height:4px;background:#e2e8f0;border-radius:3px;width:75%"></div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="container">
+
+    <!-- Logo -->
+    <div class="logo">
+      <div class="logo-icon">R</div>
+      <span class="logo-name">Resume<span>Pro</span></span>
+    </div>
+
+    <!-- Badge -->
+    <div class="badge">
+      <span class="badge-dot"></span>
+      Something exciting is coming
+    </div>
+
+    <!-- Headline -->
+    <h1>
+      <em>Land Your</em>
+      <span class="line2">Dream Job</span>
+    </h1>
+
+    <!-- Subtitle -->
+    <p class="subtitle">
+      We're putting the finishing touches on India's smartest AI resume builder.
+      ATS-optimized resumes, 5 professional templates, and instant downloads — for just ₹199.
+    </p>
+
+    <!-- Countdown -->
+    <div class="countdown-wrap">
+      <div class="count-box">
+        <div class="count-num" id="days">00</div>
+        <div class="count-label">Days</div>
+      </div>
+      <div class="count-box">
+        <div class="count-num" id="hours">00</div>
+        <div class="count-label">Hours</div>
+      </div>
+      <div class="count-box">
+        <div class="count-num" id="mins">00</div>
+        <div class="count-label">Minutes</div>
+      </div>
+      <div class="count-box">
+        <div class="count-num" id="secs">00</div>
+        <div class="count-label">Seconds</div>
+      </div>
+    </div>
+
+    <!-- Email Notify -->
+    <div class="notify-wrap">
+      <span class="notify-label">🔔 Get notified when we launch</span>
+      <div class="notify-form" id="notifyForm">
+        <input class="notify-input" type="email" placeholder="your@email.com" id="emailInput"/>
+        <button class="notify-btn" onclick="handleNotify()">Notify Me →</button>
+      </div>
+      <div class="notify-success" id="notifySuccess">
+        🎉 You're on the list! We'll email you on launch day.
+      </div>
+      <div class="notify-note">🔒 No spam. Unsubscribe anytime.</div>
+    </div>
+
+    <!-- Features -->
+    <div class="features">
+      <div class="feat-pill"><span class="feat-icon">🤖</span> Claude AI Enhanced</div>
+      <div class="feat-pill"><span class="feat-icon">📊</span> ATS Score Analysis</div>
+      <div class="feat-pill"><span class="feat-icon">🎨</span> 5 Templates</div>
+      <div class="feat-pill"><span class="feat-icon">📄</span> PDF + Word</div>
+      <div class="feat-pill"><span class="feat-icon">💰</span> Only ₹199</div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer-note">
+      Built with ❤️ in India · <strong>resumepro.in</strong>
+    </div>
+
+  </div>
+
+  <script>
+    // ── COUNTDOWN to launch date (set to 7 days from now) ──
+    const launchDate = new Date();
+    launchDate.setDate(launchDate.getDate() + 7);
+
+    function updateCountdown() {
+      const now = new Date();
+      const diff = launchDate - now;
+
+      if (diff <= 0) {
+        document.getElementById('days').textContent = '00';
+        document.getElementById('hours').textContent = '00';
+        document.getElementById('mins').textContent = '00';
+        document.getElementById('secs').textContent = '00';
+        return;
+      }
+
+      const days  = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const mins  = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const secs  = Math.floor((diff % (1000 * 60)) / 1000);
+
+      document.getElementById('days').textContent  = String(days).padStart(2, '0');
+      document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+      document.getElementById('mins').textContent  = String(mins).padStart(2, '0');
+      document.getElementById('secs').textContent  = String(secs).padStart(2, '0');
+    }
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+
+    // ── EMAIL NOTIFY ──
+    function handleNotify() {
+      const email = document.getElementById('emailInput').value;
+      if (!email || !email.includes('@')) {
+        document.getElementById('emailInput').style.borderBottom = '2px solid #DC2626';
+        document.getElementById('emailInput').placeholder = 'Please enter a valid email';
+        return;
+      }
+      document.getElementById('notifyForm').style.display = 'none';
+      const success = document.getElementById('notifySuccess');
+      success.style.display = 'flex';
+    }
+
+    // Enter key support
+    document.getElementById('emailInput').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') handleNotify();
+    });
+  </script>
+
+</body>
+</html>
