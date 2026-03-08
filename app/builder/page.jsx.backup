@@ -139,7 +139,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#F0F2F5;color:#1a1d23
 .zoom-btn:hover{border-color:var(--primary);color:var(--primary)}
 
 /* Resume sheet wrapper */
-.sheet-wrap{width:100%;max-width:680px;box-shadow:var(--shadow-lg);border-radius:3px;animation:sheetIn 0.4s ease;transform-origin:top center}
+.sheet-wrap{width:100%;max-width:680px;box-shadow:var(--shadow-lg);border-radius:3px;overflow:hidden;animation:sheetIn 0.4s ease;transform-origin:top center}
 @keyframes sheetIn{from{opacity:0;transform:translateY(16px) scale(0.98)}to{opacity:1;transform:translateY(0) scale(1)}}
 
 .empty-preview{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;height:100%;padding:60px 20px;gap:16px}
@@ -227,7 +227,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#F0F2F5;color:#1a1d23
 
 /* ══ RESUME TEMPLATES ══ */
 /* 1. MODERN */
-.tpl-modern{background:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:10px;color:#1a1d23}
+.tpl-modern{background:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:10px;color:#1a1d23;min-height:500px}
 .tpl-modern .r-header{background:linear-gradient(135deg,#1e3a5f,#2563EB);color:#fff;padding:24px 28px 20px;position:relative;overflow:hidden}
 .tpl-modern .r-header::before{content:'';position:absolute;right:-30px;top:-30px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,0.06)}
 .tpl-modern .r-header::after{content:'';position:absolute;right:20px;bottom:-20px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,0.04)}
@@ -260,7 +260,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#F0F2F5;color:#1a1d23
 .tpl-modern .r-cert-item{font-size:9.5px;color:#4a5568;margin-bottom:4px;display:flex;gap:5px;align-items:flex-start}
 
 /* 2. CORPORATE */
-.tpl-corp{background:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:10px;color:#1a1d23}
+.tpl-corp{background:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:10px;color:#1a1d23;min-height:500px}
 .tpl-corp .r-header{padding:24px 28px 18px;border-bottom:3px solid #1e3a5f;display:flex;justify-content:space-between;align-items:flex-end}
 .tpl-corp .r-header-left{}
 .tpl-corp .r-name{font-size:26px;font-weight:800;color:#1e3a5f;letter-spacing:-0.5px;margin-bottom:3px}
@@ -284,7 +284,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#F0F2F5;color:#1a1d23
 .tpl-corp .r-edu-meta{font-size:9px;color:#94a3b8}
 
 /* 3. SIMPLE */
-.tpl-simple{background:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:10px;color:#2d3748;padding:24px 28px}
+.tpl-simple{background:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:10px;color:#2d3748;min-height:500px;padding:24px 28px}
 .tpl-simple .r-name{font-size:26px;font-weight:800;color:#2d3748;letter-spacing:-0.5px;margin-bottom:2px}
 .tpl-simple .r-title{font-size:12px;color:#718096;font-weight:500;margin-bottom:10px}
 .tpl-simple .r-contacts{display:flex;flex-wrap:wrap;gap:14px;font-size:9px;color:#718096;margin-bottom:18px;padding-bottom:14px;border-bottom:1.5px solid #e2e8f0}
@@ -304,7 +304,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#F0F2F5;color:#1a1d23
 .tpl-simple .r-exp-item:last-child{border-bottom:none}
 
 /* 4. ELEGANT */
-.tpl-elegant{background:#fff;font-family:'Playfair Display',serif;font-size:10px;color:#2c2c2c}
+.tpl-elegant{background:#fff;font-family:'Playfair Display',serif;font-size:10px;color:#2c2c2c;min-height:500px}
 .tpl-elegant .r-header{background:#1a1a2e;color:#fff;padding:26px 28px 22px;text-align:center;position:relative}
 .tpl-elegant .r-header-accent{position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#B7860D,#D4A853,#B7860D)}
 .tpl-elegant .r-name{font-size:26px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;color:#fff}
@@ -327,7 +327,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#F0F2F5;color:#1a1d23
 .tpl-elegant .r-edu-meta{font-size:8.5px;color:#b0a898;font-family:'Plus Jakarta Sans',sans-serif}
 
 /* 5. CREATIVE */
-.tpl-creative{background:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:10px;color:#1a1a2e}
+.tpl-creative{background:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:10px;color:#1a1a2e;min-height:500px}
 .tpl-creative .r-header{background:linear-gradient(135deg,#7C3AED,#C026D3);padding:24px 28px 20px;color:#fff;position:relative;overflow:hidden}
 .tpl-creative .r-header-shape{position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,0.07)}
 .tpl-creative .r-header-shape2{position:absolute;left:-20px;bottom:-40px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,0.05)}
@@ -464,151 +464,12 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#F0F2F5;color:#1a1d23
    DATA & CONSTANTS
 ══════════════════════════════════════════════════════ */
 const TEMPLATES = [
-  { id: "modern",  name: "Modern",    tag: "Popular",     desc: "Bold gradient header with skill bars" },
-  { id: "corp",    name: "Corporate", tag: "Professional", desc: "Classic corporate with clean layout" },
-  { id: "simple",  name: "Simple",    tag: "ATS Friendly", desc: "Minimal & distraction-free" },
-  { id: "elegant", name: "Elegant",   tag: "Premium",     desc: "Gold accents with serif typography" },
-  { id: "creative",name: "Creative",  tag: "Bold",        desc: "Purple gradient for creative roles" },
-  { id: "teal",    name: "Teal",      tag: "Fresh",       desc: "Clean teal sidebar layout" },
-  { id: "dark",    name: "Dark",      tag: "Tech",        desc: "Sleek dark theme for tech roles" },
-  { id: "orange",  name: "Orange",    tag: "Vibrant",     desc: "Warm orange accents" },
-  { id: "minimal", name: "Minimal",   tag: "Ultra Clean", desc: "Ultra clean no-color design" },
-  { id: "rose",    name: "Rose",      tag: "Creative",    desc: "Pink/rose for creative fields" },
+  { id: "modern", name: "Modern", tag: "Popular", desc: "Bold gradient header with skill bars" },
+  { id: "corp", name: "Corporate", tag: "Professional", desc: "Classic corporate with clean layout" },
+  { id: "simple", name: "Simple", tag: "Clean", desc: "Minimal & distraction-free" },
+  { id: "elegant", name: "Elegant", tag: "Premium", desc: "Gold accents with serif typography" },
+  { id: "creative", name: "Creative", tag: "Modern", desc: "Purple gradient for creative roles" },
 ];
-
-/* ── New template CSS injected via style tag ── */
-const NEW_TEMPLATE_CSS = `
-.tpl-teal{background:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:10px;color:#134e4a}
-.tpl-teal .r-header{background:linear-gradient(135deg,#0f766e,#14b8a6);color:#fff;padding:24px 28px 20px}
-.tpl-teal .r-name{font-size:22px;font-weight:800;letter-spacing:-.5px;margin-bottom:2px}
-.tpl-teal .r-title{font-size:10px;color:rgba(255,255,255,.65);margin-bottom:10px}
-.tpl-teal .r-contacts{display:flex;flex-wrap:wrap;gap:12px;font-size:9px;color:rgba(255,255,255,.65)}
-.tpl-teal .r-contact-item{display:flex;align-items:center;gap:4px}
-.tpl-teal .r-body{display:grid;grid-template-columns:1fr 2.2fr;gap:0}
-.tpl-teal .r-sidebar{background:#f0fdfa;padding:18px 16px;border-right:1px solid #ccfbf1}
-.tpl-teal .r-main{padding:18px 20px}
-.tpl-teal .r-sec-title{font-size:8px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#0f766e;margin-bottom:8px;padding-bottom:5px;border-bottom:2px solid #14b8a6}
-.tpl-teal .r-sec{margin-bottom:14px}
-.tpl-teal .r-summary{font-size:9.5px;line-height:1.75;color:#4a5568}
-.tpl-teal .r-skill-item{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
-.tpl-teal .r-skill-name{font-size:9px;color:#374151;font-weight:600}
-.tpl-teal .r-skill-bar{width:56px;height:3px;background:#e2e8f0;border-radius:2px;overflow:hidden}
-.tpl-teal .r-skill-fill{height:100%;background:linear-gradient(90deg,#0f766e,#14b8a6)}
-.tpl-teal .r-tag{display:inline-block;background:#ccfbf1;color:#0f766e;font-size:8.5px;padding:2px 6px;border-radius:3px;margin:2px 2px 2px 0;font-weight:600}
-.tpl-teal .r-exp-item{margin-bottom:12px}
-.tpl-teal .r-exp-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1px}
-.tpl-teal .r-exp-role{font-size:10.5px;font-weight:800;color:#134e4a}
-.tpl-teal .r-exp-dur{font-size:8.5px;background:#ccfbf1;color:#0f766e;padding:1px 6px;border-radius:8px;font-weight:600}
-.tpl-teal .r-exp-co{font-size:9px;color:#6b7280;margin-bottom:4px}
-.tpl-teal .r-bullet{display:flex;gap:5px;font-size:9px;color:#4a5568;margin-bottom:3px;line-height:1.5}
-.tpl-teal .r-dot{width:3px;height:3px;background:#14b8a6;border-radius:50%;margin-top:4px;flex-shrink:0}
-.tpl-teal .r-edu-item{margin-bottom:9px}
-.tpl-teal .r-edu-deg{font-size:10px;font-weight:700;color:#134e4a}
-.tpl-teal .r-edu-school{font-size:9px;color:#6b7280}
-.tpl-teal .r-edu-meta{font-size:8.5px;color:#94a3b8;margin-top:1px}
-
-.tpl-dark{background:#0f172a;font-family:'Plus Jakarta Sans',sans-serif;font-size:10px;color:#e2e8f0}
-.tpl-dark .r-header{background:#0f172a;padding:24px 28px 20px;border-bottom:1px solid #334155;position:relative}
-.tpl-dark .r-header::after{content:'';position:absolute;bottom:0;left:28px;right:28px;height:1px;background:linear-gradient(90deg,#3b82f6,#7c3aed,transparent)}
-.tpl-dark .r-name{font-size:22px;font-weight:800;letter-spacing:-.5px;margin-bottom:2px;color:#f1f5f9}
-.tpl-dark .r-title{font-size:10px;color:#94a3b8;margin-bottom:10px}
-.tpl-dark .r-contacts{display:flex;flex-wrap:wrap;gap:12px;font-size:9px;color:#64748b}
-.tpl-dark .r-contact-item{display:flex;align-items:center;gap:4px}
-.tpl-dark .r-body{display:grid;grid-template-columns:1fr 2fr}
-.tpl-dark .r-sidebar{background:#1e293b;padding:18px 16px;border-right:1px solid #334155}
-.tpl-dark .r-main{padding:18px 20px}
-.tpl-dark .r-sec-title{font-size:8px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#3b82f6;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid #334155}
-.tpl-dark .r-sec{margin-bottom:14px}
-.tpl-dark .r-summary{font-size:9.5px;line-height:1.75;color:#94a3b8}
-.tpl-dark .r-skill-item{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
-.tpl-dark .r-skill-name{font-size:9px;color:#94a3b8;font-weight:600}
-.tpl-dark .r-skill-bar{width:56px;height:3px;background:#334155;border-radius:2px;overflow:hidden}
-.tpl-dark .r-skill-fill{height:100%;background:linear-gradient(90deg,#3b82f6,#7c3aed)}
-.tpl-dark .r-tag{display:inline-block;background:#1e3a5f;color:#60a5fa;font-size:8.5px;padding:2px 7px;border-radius:4px;margin:2px 2px 2px 0;font-weight:600;border:1px solid #1e40af}
-.tpl-dark .r-exp-item{margin-bottom:13px}
-.tpl-dark .r-exp-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1px}
-.tpl-dark .r-exp-role{font-size:10.5px;font-weight:800;color:#f1f5f9}
-.tpl-dark .r-exp-dur{font-size:8.5px;color:#3b82f6;font-weight:600}
-.tpl-dark .r-exp-co{font-size:9px;color:#64748b;margin-bottom:4px}
-.tpl-dark .r-bullet{display:flex;gap:5px;font-size:9px;color:#94a3b8;margin-bottom:3px;line-height:1.5}
-.tpl-dark .r-dot{width:3px;height:3px;background:#3b82f6;border-radius:50%;margin-top:4px;flex-shrink:0}
-.tpl-dark .r-edu-item{margin-bottom:9px}
-.tpl-dark .r-edu-deg{font-size:10px;font-weight:700;color:#f1f5f9}
-.tpl-dark .r-edu-school{font-size:9px;color:#64748b}
-.tpl-dark .r-edu-meta{font-size:8.5px;color:#475569}
-
-.tpl-orange{background:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:10px;color:#1a1a1a}
-.tpl-orange .r-header{padding:20px 24px;border-top:5px solid #ea580c}
-.tpl-orange .r-header-inner{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:14px;border-bottom:1px solid #fed7aa}
-.tpl-orange .r-name{font-size:23px;font-weight:900;letter-spacing:-1px;color:#ea580c;margin-bottom:3px}
-.tpl-orange .r-title{font-size:10px;color:#78716c}
-.tpl-orange .r-contacts{display:flex;flex-direction:column;gap:3px;align-items:flex-end;font-size:8.5px;color:#78716c}
-.tpl-orange .r-contact-item{display:flex;align-items:center;gap:4px}
-.tpl-orange .r-body{padding:0 24px 20px}
-.tpl-orange .r-two-col{display:grid;grid-template-columns:1.3fr 2fr;gap:20px;padding-top:14px}
-.tpl-orange .r-sec-title{font-size:8.5px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#ea580c;margin-bottom:8px;padding-left:7px;border-left:3px solid #ea580c}
-.tpl-orange .r-sec{margin-bottom:14px}
-.tpl-orange .r-summary{font-size:9.5px;line-height:1.75;color:#57534e}
-.tpl-orange .r-tag{display:inline-block;background:#fff7ed;color:#ea580c;font-size:8.5px;padding:2px 7px;border-radius:4px;margin:2px 2px 2px 0;font-weight:600;border:1px solid #fed7aa}
-.tpl-orange .r-exp-item{margin-bottom:12px}
-.tpl-orange .r-exp-role{font-size:10.5px;font-weight:800;color:#1a1a1a}
-.tpl-orange .r-exp-co{font-size:9px;color:#78716c;margin-bottom:2px}
-.tpl-orange .r-exp-dur{font-size:8.5px;color:#ea580c;font-weight:600;margin-bottom:4px}
-.tpl-orange .r-bullet{display:flex;gap:5px;font-size:9px;color:#57534e;margin-bottom:3px;line-height:1.5}
-.tpl-orange .r-dot{width:4px;height:4px;background:#ea580c;border-radius:50%;margin-top:3px;flex-shrink:0}
-.tpl-orange .r-edu-deg{font-size:10px;font-weight:700;color:#1a1a1a}
-.tpl-orange .r-edu-school{font-size:9px;color:#78716c}
-.tpl-orange .r-edu-meta{font-size:8.5px;color:#a8a29e}
-
-.tpl-minimal{background:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:10px;color:#111;padding:28px 30px}
-.tpl-minimal .r-name{font-size:26px;font-weight:900;letter-spacing:-1.5px;color:#111;margin-bottom:3px}
-.tpl-minimal .r-title{font-size:11px;color:#666;font-weight:400;margin-bottom:8px}
-.tpl-minimal .r-contacts{display:flex;flex-wrap:wrap;gap:16px;font-size:9px;color:#666;margin-bottom:18px;padding-bottom:12px;border-bottom:2px solid #111}
-.tpl-minimal .r-contact-item{display:flex;align-items:center;gap:4px}
-.tpl-minimal .r-sec-title{font-size:8.5px;font-weight:900;letter-spacing:3px;text-transform:uppercase;color:#111;margin-bottom:7px;margin-top:16px}
-.tpl-minimal .r-summary{font-size:9.5px;line-height:1.8;color:#444}
-.tpl-minimal .r-exp-item{margin-bottom:11px;padding-bottom:11px;border-bottom:1px solid #eee}
-.tpl-minimal .r-exp-top{display:flex;justify-content:space-between}
-.tpl-minimal .r-exp-role{font-size:10.5px;font-weight:800;color:#111}
-.tpl-minimal .r-exp-dur{font-size:8.5px;color:#999;font-weight:500}
-.tpl-minimal .r-exp-co{font-size:9px;color:#666;margin-bottom:4px;font-weight:600}
-.tpl-minimal .r-bullet{display:flex;gap:5px;font-size:9px;color:#444;margin-bottom:2px;line-height:1.6}
-.tpl-minimal .r-dot{font-size:8px;color:#999;margin-top:1px;flex-shrink:0}
-.tpl-minimal .r-tag{display:inline-block;border:1px solid #ddd;color:#444;font-size:8.5px;padding:2px 8px;margin:2px 2px 2px 0}
-.tpl-minimal .r-edu-deg{font-size:10px;font-weight:800;color:#111}
-.tpl-minimal .r-edu-school{font-size:9px;color:#666}
-.tpl-minimal .r-edu-meta{font-size:8.5px;color:#999}
-
-.tpl-rose{background:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:10px;color:#1a1a2e}
-.tpl-rose .r-header{background:linear-gradient(135deg,#be185d,#e11d48);color:#fff;padding:22px 28px 18px;position:relative;overflow:hidden}
-.tpl-rose .r-header::before{content:'';position:absolute;right:-20px;bottom:-20px;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.07)}
-.tpl-rose .r-name{font-size:22px;font-weight:800;letter-spacing:-.5px;margin-bottom:2px}
-.tpl-rose .r-title{font-size:10px;color:rgba(255,255,255,.7);margin-bottom:10px}
-.tpl-rose .r-contacts{display:flex;flex-wrap:wrap;gap:10px;font-size:9px;color:rgba(255,255,255,.7)}
-.tpl-rose .r-contact-item{display:flex;align-items:center;gap:4px}
-.tpl-rose .r-body{display:grid;grid-template-columns:1fr 2.2fr}
-.tpl-rose .r-sidebar{background:#fff1f2;padding:18px 16px;border-right:1px solid #fecdd3}
-.tpl-rose .r-main{padding:18px 20px}
-.tpl-rose .r-sec-title{font-size:8px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#be185d;margin-bottom:7px;padding-bottom:4px;border-bottom:2px solid #e11d48}
-.tpl-rose .r-sec{margin-bottom:14px}
-.tpl-rose .r-summary{font-size:9.5px;line-height:1.75;color:#4a5568}
-.tpl-rose .r-skill-item{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
-.tpl-rose .r-skill-name{font-size:9px;color:#374151;font-weight:600}
-.tpl-rose .r-skill-bar{width:56px;height:3px;background:#fecdd3;border-radius:2px;overflow:hidden}
-.tpl-rose .r-skill-fill{height:100%;background:linear-gradient(90deg,#be185d,#e11d48)}
-.tpl-rose .r-tag{display:inline-block;background:#fff1f2;color:#be185d;font-size:8.5px;padding:2px 6px;border-radius:8px;margin:2px 2px 2px 0;font-weight:600;border:1px solid #fecdd3}
-.tpl-rose .r-exp-item{margin-bottom:12px}
-.tpl-rose .r-exp-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1px}
-.tpl-rose .r-exp-role{font-size:10.5px;font-weight:800;color:#1a1a2e}
-.tpl-rose .r-exp-dur{font-size:8.5px;color:#be185d;font-weight:600}
-.tpl-rose .r-exp-co{font-size:9px;color:#6b7280;margin-bottom:4px}
-.tpl-rose .r-bullet{display:flex;gap:5px;font-size:9px;color:#4a5568;margin-bottom:3px;line-height:1.5}
-.tpl-rose .r-dot{width:3px;height:3px;background:#e11d48;border-radius:50%;margin-top:4px;flex-shrink:0}
-.tpl-rose .r-edu-item{margin-bottom:9px}
-.tpl-rose .r-edu-deg{font-size:10px;font-weight:700;color:#1a1a2e}
-.tpl-rose .r-edu-school{font-size:9px;color:#6b7280}
-.tpl-rose .r-edu-meta{font-size:8.5px;color:#94a3b8}
-`;
 
 const INIT = {
   personal: { name: "", title: "", email: "", phone: "", location: "", linkedin: "", summary: "" },
@@ -691,7 +552,7 @@ function ResumeContent({ data, tpl }) {
       <div className="r-header">
         <div className="r-name">{p.name||"Your Name"}</div>
         {p.title&&<div className="r-title">{p.title}</div>}
-        <div className="r-contacts">{contacts.map((c,i)=><span key={i} className="r-contact-item"><span style={{marginRight:3}}>{contactIcon(c)}</span>{c}</span>)}</div>
+        <div className="r-contacts">{contacts.map((c,i)=><span key={i} className="r-contact-item">◆ {c}</span>)}</div>
       </div>
       <div className="r-body">
         <div className="r-sidebar">
@@ -719,7 +580,7 @@ function ResumeContent({ data, tpl }) {
     <div className="tpl-corp">
       <div className="r-header">
         <div className="r-header-left"><div className="r-name">{p.name||"Your Name"}</div>{p.title&&<div className="r-title">{p.title}</div>}</div>
-        <div className="r-header-right"><div className="r-contacts">{contacts.map((c,i)=><span key={i} className="r-contact-item"><span style={{marginRight:3}}>{contactIcon(c)}</span>{c}</span>)}</div></div>
+        <div className="r-header-right"><div className="r-contacts">{contacts.map((c,i)=><span key={i}>{c}</span>)}</div></div>
       </div>
       <div className="r-body">
         {p.summary&&<div className="r-sec" style={{paddingTop:16,borderBottom:'1px solid #f1f5f9',paddingBottom:14,paddingLeft:0,paddingRight:0}}><div className="r-sec-title">Professional Summary</div><div className="r-summary">{p.summary}</div></div>}
@@ -746,7 +607,7 @@ function ResumeContent({ data, tpl }) {
     <div className="tpl-simple">
       <div className="r-name">{p.name||"Your Name"}</div>
       {p.title&&<div className="r-title">{p.title}</div>}
-      <div className="r-contacts">{contacts.map((c,i)=><span key={i}><span style={{marginRight:3}}>{contactIcon(c)}</span>{c}</span>)}</div>
+      <div className="r-contacts">{contacts.map((c,i)=><span key={i}>{c}</span>)}</div>
       {p.summary&&<><div className="r-sec-title">Summary</div><div className="r-summary">{p.summary}</div></>}
       {exps.length>0&&<><div className="r-sec-title" style={{marginTop:14}}>Experience</div>{exps.map((e,i)=>{const bs=e.bullets?.split("\n").filter(b=>b.trim())||[];return(<div key={i} className="r-exp-item"><div className="r-exp-top"><span className="r-exp-role">{e.role}</span><span className="r-exp-dur">{e.duration}</span></div><div className="r-exp-co">{e.company}</div>{bs.map((b,j)=><div key={j} className="r-bullet"><span className="r-dot">–</span>{b.replace(/^[•\-*]\s*/,"")}</div>)}</div>)})}</>}
       {(tech.length||soft.length||langs.length)>0&&<><div className="r-sec-title" style={{marginTop:14}}>Skills</div><div className="r-skills-row">{[...tech,...soft,...langs].map((s,i)=><span key={i} className="r-tag">{s}</span>)}</div></>}
@@ -761,7 +622,7 @@ function ResumeContent({ data, tpl }) {
         <div className="r-header-accent"/>
         <div className="r-name">{p.name||"Your Name"}</div>
         {p.title&&<div className="r-title">{p.title}</div>}
-        <div className="r-contacts">{contacts.map((c,i)=><span key={i} className="r-contact-item"><span style={{marginRight:3}}>{contactIcon(c)}</span>{c}</span>)}</div>
+        <div className="r-contacts">{contacts.map((c,i)=><span key={i}>{c}</span>)}</div>
       </div>
       <div className="r-body">
         <div className="r-sidebar">
@@ -788,7 +649,7 @@ function ResumeContent({ data, tpl }) {
         <div className="r-header-shape"/><div className="r-header-shape2"/>
         <div className="r-name">{p.name||"Your Name"}</div>
         {p.title&&<div className="r-title">{p.title}</div>}
-        <div className="r-contacts">{contacts.map((c,i)=><span key={i} className="r-contact-pill"><span style={{marginRight:3}}>{contactIcon(c)}</span>{c}</span>)}</div>
+        <div className="r-contacts">{contacts.map((c,i)=><span key={i} className="r-contact-pill">{c}</span>)}</div>
       </div>
       <div className="r-body">
         <div className="r-sidebar">
@@ -806,53 +667,6 @@ function ResumeContent({ data, tpl }) {
           </div>}
         </div>
       </div>
-    </div>
-  );
-
-  // ── NEW TEMPLATES (teal, dark, orange, minimal, rose) ──
-  const sidebarNew = (accentColor, tagBg, tagColor) => (
-    <>
-      {p.summary&&<div className="r-sec"><div className="r-sec-title">About</div><div className="r-summary">{p.summary}</div></div>}
-      {(tech.length||soft.length)>0&&<div className="r-sec"><div className="r-sec-title">Skills</div>
-        {tech.map((s,i)=><div key={i} className="r-skill-item"><span className="r-skill-name">{s}</span><div className="r-skill-bar"><div className="r-skill-fill" style={{width:Math.floor(65+((i*17)%30))+"%"}}/></div></div>)}
-        {soft.map((s,i)=><span key={i} className="r-tag">{s}</span>)}
-      </div>}
-      {langs.length>0&&<div className="r-sec"><div className="r-sec-title">Languages</div>{langs.map((s,i)=><span key={i} className="r-tag">{s}</span>)}</div>}
-      {edus.length>0&&<div className="r-sec"><div className="r-sec-title">Education</div>{edus.map((e,i)=><div key={i} className="r-edu-item"><div className="r-edu-deg">{e.degree}</div><div className="r-edu-school">{e.school}</div><div className="r-edu-meta">{[e.year,e.gpa&&`GPA:${e.gpa}`].filter(Boolean).join(" · ")}</div></div>)}</div>}
-      {certs.length>0&&<div className="r-sec"><div className="r-sec-title">Certifications</div>{certs.map((c,i)=><div key={i} style={{fontSize:9,color:"#4a5568",marginBottom:3}}>✓ {c}</div>)}</div>}
-    </>
-  );
-  const mainExpNew = () => exps.length>0?(
-    <div className="r-sec"><div className="r-sec-title">Work Experience</div>
-      {exps.map((e,i)=><div key={i} className="r-exp-item">
-        <div className="r-exp-top"><span className="r-exp-role">{e.role}</span>{e.duration&&<span className="r-exp-dur">{e.duration}</span>}</div>
-        <div className="r-exp-co">{e.company}</div>
-        {(e.bullets?.split("\n").filter(b=>b.trim())||[]).map((b,j)=><div key={j} className="r-bullet"><span className="r-dot">◆</span><span>{b.replace(/^[•\-*]\s*/,"")}</span></div>)}
-      </div>)}
-    </div>
-  ):null;
-
-  if(tpl==="teal"||tpl==="dark"||tpl==="rose") return(
-    <div className={`tpl-${tpl}`}>
-      <div className="r-header"><div className="r-name">{p.name||"Your Name"}</div>{p.title&&<div className="r-title">{p.title}</div>}<div className="r-contacts">{contacts.map((c,i)=><span key={i} className="r-contact-item"><span style={{marginRight:3}}>{contactIcon(c)}</span>{c}</span>)}</div></div>
-      <div className="r-body"><div className="r-sidebar">{sidebarNew()}</div><div className="r-main">{mainExpNew()}</div></div>
-    </div>
-  );
-  if(tpl==="orange") return(
-    <div className="tpl-orange">
-      <div className="r-header"><div className="r-header-inner"><div><div className="r-name">{p.name||"Your Name"}</div>{p.title&&<div className="r-title">{p.title}</div>}</div><div className="r-contacts">{contacts.map((c,i)=><span key={i} className="r-contact-item"><span style={{marginRight:3}}>{contactIcon(c)}</span>{c}</span>)}</div></div></div>
-      <div className="r-body"><div className="r-two-col"><div>{sidebarNew()}</div><div>{mainExpNew()}</div></div></div>
-    </div>
-  );
-  if(tpl==="minimal") return(
-    <div className="tpl-minimal">
-      <div className="r-name">{p.name||"Your Name"}</div>{p.title&&<div className="r-title">{p.title}</div>}
-      <div className="r-contacts">{contacts.map((c,i)=><span key={i} className="r-contact-item"><span style={{marginRight:3}}>{contactIcon(c)}</span>{c}</span>)}</div>
-      {p.summary&&<><div className="r-sec-title">Summary</div><div className="r-summary" style={{marginBottom:8}}>{p.summary}</div></>}
-      {exps.length>0&&<><div className="r-sec-title">Experience</div>{exps.map((e,i)=><div key={i} className="r-exp-item"><div className="r-exp-top"><span className="r-exp-role">{e.role}</span><span className="r-exp-dur">{e.duration}</span></div><div className="r-exp-co">{e.company}</div>{(e.bullets?.split("\n").filter(b=>b.trim())||[]).map((b,j)=><div key={j} className="r-bullet"><span className="r-dot">—</span><span>{b.replace(/^[•\-*]\s*/,"")}</span></div>)}</div>)}</>}
-      {(tech.length||soft.length||langs.length)>0&&<><div className="r-sec-title">Skills</div><div style={{display:"flex",flexWrap:"wrap",gap:4,marginBottom:10}}>{[...tech,...soft,...langs].map((s,i)=><span key={i} className="r-tag">{s}</span>)}</div></>}
-      {edus.length>0&&<><div className="r-sec-title">Education</div>{edus.map((e,i)=><div key={i} style={{marginBottom:8}}><div className="r-edu-deg">{e.degree}</div><div className="r-edu-school">{e.school}{e.year&&` · ${e.year}`}</div></div>)}</>}
-      {certs.length>0&&<><div className="r-sec-title">Certifications</div>{certs.map((c,i)=><div key={i} style={{fontSize:9,color:"#444",marginBottom:2}}>— {c}</div>)}</>}
     </div>
   );
 
@@ -950,13 +764,7 @@ async function genWord(d) {
   if(certs.length){children.push(secHdr("Certifications"));certs.forEach(c=>children.push(bullet(c)));}
   const doc=new Document({sections:[{properties:{page:{margin:{top:720,bottom:720,left:900,right:900}}},children}]});
   const blob=await Packer.toBlob(doc);
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement("a");
-  a.href=url;
-  a.download=`${d.personal.name||"resume"}_Resume.docx`;
-  document.body.appendChild(a);
-  a.click();
-  setTimeout(()=>{ document.body.removeChild(a); URL.revokeObjectURL(url); }, 200);
+  const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=`${d.personal.name||"resume"}_Resume.docx`;a.click();URL.revokeObjectURL(url);
 }
 
 /* ══════════════════════════════════════════════════════
@@ -1059,17 +867,9 @@ export default function App() {
     setDlLoading(f);
     try {
       if(f==="pdf"){ if(!jsPdfReady||!window.jspdf){alert("PDF library loading, try again.");return;} genPDF(d,tpl); }
-      else {
-        if(!docxReady){ alert("Word library loading, please wait 3 seconds and try again."); return; }
-        // FIX 5: wait for window.docx to be fully ready
-        let tries = 0;
-        while(!window.docx && tries < 10){ await new Promise(r=>setTimeout(r,500)); tries++; }
-        if(!window.docx){ alert("Word library failed to load. Please try PDF instead or refresh the page."); return; }
-        await genWord(d);
-      }
+      else { if(!docxReady||!window.docx){alert("Word library loading, try again.");return;} await genWord(d); }
     } catch(err){alert("Download failed: "+err.message);}
-    finally{setDlLoading(null);}
-    // FIX 2: Do NOT reset paid or close modal — user can re-download in same session
+    finally{setDlLoading(null);setShowSuccess(false);}
   };
 
   const hasName = !!data.personal.name;
@@ -1080,7 +880,6 @@ export default function App() {
   return (
     <>
       <style>{G}</style>
-      <style>{NEW_TEMPLATE_CSS}</style>
       <div className="app">
 
         {/* TOPBAR */}
