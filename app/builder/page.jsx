@@ -697,7 +697,7 @@ function ResumeContent({ data, tpl }) {
         <div className="r-sidebar">
           {p.summary&&<div className="r-sec"><div className="r-sec-title">About</div><div className="r-summary">{p.summary}</div></div>}
           {(tech.length||soft.length||langs.length)>0&&<div className="r-sec"><div className="r-sec-title">Skills</div>
-            {tech.map((s,i)=><div key={i} className="r-skill-item"><span className="r-skill-name">{s}</span><div className="r-skill-bar"><div className="r-skill-fill" style={{width:Math.floor(65+Math.random()*30)+'%'}}/></div></div>)}
+            {tech.map((s,i)=><div key={i} className="r-skill-item"><span className="r-skill-name">{s}</span><div className="r-skill-bar"><div className="r-skill-fill" style={{width:[70,85,75,90,80,65,95][i%7]+'%'}}/></div></div>)}
             {soft.map((s,i)=><div key={i} className="r-tag" style={{marginTop:4}}>{s}</div>)}
           </div>}
           {langs.length>0&&<div className="r-sec"><div className="r-sec-title">Languages</div>{langs.map((l,i)=><div key={i} className="r-tag">{l}</div>)}</div>}
@@ -814,7 +814,7 @@ function ResumeContent({ data, tpl }) {
     <>
       {p.summary&&<div className="r-sec"><div className="r-sec-title">About</div><div className="r-summary">{p.summary}</div></div>}
       {(tech.length||soft.length)>0&&<div className="r-sec"><div className="r-sec-title">Skills</div>
-        {tech.map((s,i)=><div key={i} className="r-skill-item"><span className="r-skill-name">{s}</span><div className="r-skill-bar"><div className="r-skill-fill" style={{width:Math.floor(65+((i*17)%30))+"%"}}/></div></div>)}
+        {tech.map((s,i)=><div key={i} className="r-skill-item"><span className="r-skill-name">{s}</span><div className="r-skill-bar"><div className="r-skill-fill" style={{width:[70,85,75,90,80][i%5]+"%"}}/></div></div>)}
         {soft.map((s,i)=><span key={i} className="r-tag">{s}</span>)}
       </div>}
       {langs.length>0&&<div className="r-sec"><div className="r-sec-title">Languages</div>{langs.map((s,i)=><span key={i} className="r-tag">{s}</span>)}</div>}
