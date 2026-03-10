@@ -624,6 +624,13 @@ const STEPS = ["Build", "Template", "Score", "Download"];
 /* ══════════════════════════════════════════════════════
    TEMPLATE THUMBNAILS
 ══════════════════════════════════════════════════════ */
+function contactIcon(val) {
+  if (val.includes('@')) return '✉';
+  if (val.toLowerCase().includes('linkedin')) return '🔗';
+  if (val.replace(/[^0-9]/g, '').length >= 7) return '📱';
+  return '📍';
+}
+
 function Thumb({ id }) {
   if (id === "modern") return (
     <div className="thumb-modern">
