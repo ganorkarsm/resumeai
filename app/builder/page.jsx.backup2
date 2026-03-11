@@ -420,26 +420,6 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#F0F2F5;color:#1a1d23
 .spin-dark{width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin 0.7s linear infinite;display:inline-block;flex-shrink:0}
 .badge-new{background:#fef3c7;color:#d97706;font-size:8px;font-weight:700;letter-spacing:0.5px;padding:1px 6px;border-radius:6px;text-transform:uppercase;vertical-align:middle;margin-left:4px}
 
-/* UPLOAD RESUME BUTTON */
-.upload-resume-btn{width:100%;background:#fff;border:2px dashed var(--border2);border-radius:var(--radius);font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;color:var(--ink2);padding:11px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px}
-.upload-resume-btn:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-light)}
-.upload-resume-btn:disabled{opacity:0.5;cursor:not-allowed}
-
-/* EDITABLE PREVIEW NOTICE */
-.preview-edit-notice{font-size:10px;color:var(--ink3);background:#fffbeb;border:1px solid #fde68a;border-radius:var(--radius-sm);padding:5px 10px;display:flex;align-items:center;gap:6px;width:100%;max-width:680px}
-
-/* UPLOAD MODAL */
-.upload-modal{background:#fff;max-width:440px;width:100%;border-radius:var(--radius-lg);padding:32px;box-shadow:var(--shadow-lg);animation:slideUp 0.3s cubic-bezier(.34,1.56,.64,1)}
-.upload-dropzone{border:2px dashed var(--border2);border-radius:var(--radius);padding:32px 20px;text-align:center;cursor:pointer;transition:all 0.2s;background:#fafbfc}
-.upload-dropzone:hover,.upload-dropzone.drag{border-color:var(--primary);background:var(--primary-light)}
-.upload-dropzone-icon{font-size:40px;margin-bottom:12px}
-.upload-dropzone h3{font-size:15px;font-weight:800;color:var(--ink);margin-bottom:6px}
-.upload-dropzone p{font-size:11.5px;color:var(--ink3);line-height:1.6}
-.upload-formats{display:flex;gap:6px;justify-content:center;margin-top:12px}
-.upload-fmt-pill{font-size:9px;font-weight:700;letter-spacing:1px;padding:3px 10px;border-radius:10px;text-transform:uppercase}
-.upload-fmt-pill.pdf{background:#fee2e2;color:#991b1b}
-.upload-fmt-pill.docx{background:#dbeafe;color:#1e40af}
-
 /* THUMB TEMPLATES (small version for template cards) */
 .thumb-modern{width:100%;height:90px;background:linear-gradient(135deg,#1e3a5f,#2563EB);display:flex;flex-direction:column;padding:8px 10px;gap:3px;overflow:hidden}
 .thumb-modern-name{height:7px;background:rgba(255,255,255,0.9);border-radius:2px;width:60%}
@@ -630,22 +610,6 @@ const NEW_TEMPLATE_CSS = `
 .tpl-rose .r-edu-meta{font-size:8.5px;color:#94a3b8}
 `;
 
-/* Smart bullet splitter: splits on newlines AND full stops (sentence-level) */
-function parseBullets(text) {
-  if (!text) return [];
-  // First try splitting by newlines
-  const byNewline = text.split("\n").map(s => s.trim()).filter(Boolean);
-  // If only one line and it has multiple sentences, split by ". "
-  if (byNewline.length === 1 && byNewline[0].includes('. ')) {
-    return byNewline[0]
-      .split(/\.\s+/)
-      .map(s => s.trim().replace(/^[•\-*]\s*/, ''))
-      .filter(Boolean)
-      .map((s, i, arr) => i < arr.length - 1 ? s : s.replace(/\.$/, ''));
-  }
-  return byNewline.map(s => s.replace(/^[•\-*]\s*/, ''));
-}
-
 const INIT = {
   personal: { name: "", title: "", email: "", phone: "", location: "", linkedin: "", summary: "" },
   experience: [{ id: 1, company: "", role: "", duration: "", bullets: "" }],
@@ -662,24 +626,9 @@ const STEPS = ["Build", "Template", "Score", "Download"];
 ══════════════════════════════════════════════════════ */
 function contactIcon(val) {
   if (val.includes('@')) return '✉';
-  if (val.toLowerCase().includes('linkedin')) return 'in';
+  if (val.toLowerCase().includes('linkedin')) return '🔗';
   if (val.replace(/[^0-9]/g, '').length >= 7) return '📱';
   return '📍';
-}
-
-function ContactIconEl({ val, style = {} }) {
-  const isLinkedIn = val.toLowerCase().includes('linkedin');
-  if (isLinkedIn) {
-    return (
-      <span style={{
-        display:'inline-flex', alignItems:'center', justifyContent:'center',
-        width:13, height:13, background:'#0A66C2', borderRadius:2,
-        color:'#fff', fontSize:8, fontWeight:900, fontFamily:'sans-serif',
-        letterSpacing:0, flexShrink:0, lineHeight:1, ...style
-      }}>in</span>
-    );
-  }
-  return <span style={{marginRight:3,...style}}>{contactIcon(val)}</span>;
 }
 
 function Thumb({ id }) {
@@ -734,19 +683,6 @@ function Thumb({ id }) {
 /* ══════════════════════════════════════════════════════
    RESUME RENDERERS
 ══════════════════════════════════════════════════════ */
-function ContactItem({ c }) {
-  const isLinkedIn = c.toLowerCase().includes('linkedin');
-  return (
-    <span className="r-contact-item" style={{display:'inline-flex',alignItems:'center',gap:4}}>
-      {isLinkedIn
-        ? <span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',width:11,height:11,background:'#0A66C2',borderRadius:2,color:'#fff',fontSize:7,fontWeight:900,fontFamily:'sans-serif',flexShrink:0,lineHeight:1}}>in</span>
-        : <span style={{marginRight:1}}>{contactIcon(c)}</span>
-      }
-      {c}
-    </span>
-  );
-}
-
 function ResumeContent({ data, tpl }) {
   const p = data.personal || {};
   const contacts = [p.email, p.phone, p.location, p.linkedin].filter(Boolean);
@@ -757,17 +693,12 @@ function ResumeContent({ data, tpl }) {
   const exps = data.experience?.filter(e=>e.company||e.role)||[];
   const edus = data.education?.filter(e=>e.school||e.degree)||[];
 
-  const Bullets = ({ bullets, dotEl }) => {
-    const bs = parseBullets(bullets);
-    return <>{bs.map((b,j)=><div key={j} className="r-bullet">{dotEl}<span>{b}</span></div>)}</>;
-  };
-
   if (tpl === "modern") return (
     <div className="tpl-modern">
       <div className="r-header">
         <div className="r-name">{p.name||"Your Name"}</div>
         {p.title&&<div className="r-title">{p.title}</div>}
-        <div className="r-contacts">{contacts.map((c,i)=><ContactItem key={i} c={c}/>)}</div>
+        <div className="r-contacts">{contacts.map((c,i)=><span key={i} className="r-contact-item"><span style={{marginRight:3}}>{contactIcon(c)}</span>{c}</span>)}</div>
       </div>
       <div className="r-body">
         <div className="r-sidebar">
@@ -782,9 +713,9 @@ function ResumeContent({ data, tpl }) {
         </div>
         <div className="r-main">
           {exps.length>0&&<div className="r-sec"><div className="r-sec-title">Experience</div>
-            {exps.map((e,i)=>(
-              <div key={i} className="r-exp-item"><div className="r-exp-top"><span className="r-exp-role">{e.role}</span>{e.duration&&<span className="r-exp-dur">{e.duration}</span>}</div><div className="r-exp-co">{e.company}</div><Bullets bullets={e.bullets} dotEl={<span className="r-dot"/>}/></div>
-            ))}
+            {exps.map((e,i)=>{const bs=e.bullets?.split("\n").filter(b=>b.trim())||[];return(
+              <div key={i} className="r-exp-item"><div className="r-exp-top"><span className="r-exp-role">{e.role}</span>{e.duration&&<span className="r-exp-dur">{e.duration}</span>}</div><div className="r-exp-co">{e.company}</div>{bs.map((b,j)=><div key={j} className="r-bullet"><span className="r-dot"/>{b.replace(/^[•\-*]\s*/,"")}</div>)}</div>
+            )})}
           </div>}
         </div>
       </div>
@@ -795,7 +726,7 @@ function ResumeContent({ data, tpl }) {
     <div className="tpl-corp">
       <div className="r-header">
         <div className="r-header-left"><div className="r-name">{p.name||"Your Name"}</div>{p.title&&<div className="r-title">{p.title}</div>}</div>
-        <div className="r-header-right"><div className="r-contacts">{contacts.map((c,i)=><ContactItem key={i} c={c}/>)}</div></div>
+        <div className="r-header-right"><div className="r-contacts">{contacts.map((c,i)=><span key={i} className="r-contact-item"><span style={{marginRight:3}}>{contactIcon(c)}</span>{c}</span>)}</div></div>
       </div>
       <div className="r-body">
         {p.summary&&<div className="r-sec" style={{paddingTop:16,borderBottom:'1px solid #f1f5f9',paddingBottom:14,paddingLeft:0,paddingRight:0}}><div className="r-sec-title">Professional Summary</div><div className="r-summary">{p.summary}</div></div>}
@@ -808,9 +739,9 @@ function ResumeContent({ data, tpl }) {
           </div>
           <div>
             {exps.length>0&&<div className="r-sec"><div className="r-sec-title">Work Experience</div>
-              {exps.map((e,i)=>(
-                <div key={i} style={{marginBottom:14}}><div className="r-exp-role">{e.role}</div><div className="r-exp-co">{e.company}</div><div className="r-exp-dur">{e.duration}</div><Bullets bullets={e.bullets} dotEl={<span className="r-dot"/>}/></div>
-              ))}
+              {exps.map((e,i)=>{const bs=e.bullets?.split("\n").filter(b=>b.trim())||[];return(
+                <div key={i} style={{marginBottom:14}}><div className="r-exp-role">{e.role}</div><div className="r-exp-co">{e.company}</div><div className="r-exp-dur">{e.duration}</div>{bs.map((b,j)=><div key={j} className="r-bullet"><span className="r-dot"/>{b.replace(/^[•\-*]\s*/,"")}</div>)}</div>
+              )})}
             </div>}
           </div>
         </div>
@@ -822,11 +753,9 @@ function ResumeContent({ data, tpl }) {
     <div className="tpl-simple">
       <div className="r-name">{p.name||"Your Name"}</div>
       {p.title&&<div className="r-title">{p.title}</div>}
-      <div className="r-contacts">{contacts.map((c,i)=><ContactItem key={i} c={c}/>)}</div>
+      <div className="r-contacts">{contacts.map((c,i)=><span key={i}><span style={{marginRight:3}}>{contactIcon(c)}</span>{c}</span>)}</div>
       {p.summary&&<><div className="r-sec-title">Summary</div><div className="r-summary">{p.summary}</div></>}
-      {exps.length>0&&<><div className="r-sec-title" style={{marginTop:14}}>Experience</div>{exps.map((e,i)=>(
-        <div key={i} className="r-exp-item"><div className="r-exp-top"><span className="r-exp-role">{e.role}</span><span className="r-exp-dur">{e.duration}</span></div><div className="r-exp-co">{e.company}</div><Bullets bullets={e.bullets} dotEl={<span className="r-dot">–</span>}/></div>
-      ))}</>}
+      {exps.length>0&&<><div className="r-sec-title" style={{marginTop:14}}>Experience</div>{exps.map((e,i)=>{const bs=e.bullets?.split("\n").filter(b=>b.trim())||[];return(<div key={i} className="r-exp-item"><div className="r-exp-top"><span className="r-exp-role">{e.role}</span><span className="r-exp-dur">{e.duration}</span></div><div className="r-exp-co">{e.company}</div>{bs.map((b,j)=><div key={j} className="r-bullet"><span className="r-dot">–</span>{b.replace(/^[•\-*]\s*/,"")}</div>)}</div>)})}</>}
       {(tech.length||soft.length||langs.length)>0&&<><div className="r-sec-title" style={{marginTop:14}}>Skills</div><div className="r-skills-row">{[...tech,...soft,...langs].map((s,i)=><span key={i} className="r-tag">{s}</span>)}</div></>}
       {edus.length>0&&<><div className="r-sec-title" style={{marginTop:14}}>Education</div>{edus.map((e,i)=><div key={i} style={{marginBottom:8}}><div className="r-edu-deg">{e.degree}</div><div className="r-edu-school">{e.school}  {e.year&&`· ${e.year}`}{e.gpa&&`· GPA: ${e.gpa}`}</div></div>)}</>}
       {certs.length>0&&<><div className="r-sec-title" style={{marginTop:14}}>Certifications</div>{certs.map((c,i)=><div key={i} style={{fontSize:9.5,color:'#4a5568',marginBottom:3}}>→ {c}</div>)}</>}
@@ -839,7 +768,7 @@ function ResumeContent({ data, tpl }) {
         <div className="r-header-accent"/>
         <div className="r-name">{p.name||"Your Name"}</div>
         {p.title&&<div className="r-title">{p.title}</div>}
-        <div className="r-contacts">{contacts.map((c,i)=><ContactItem key={i} c={c}/>)}</div>
+        <div className="r-contacts">{contacts.map((c,i)=><span key={i} className="r-contact-item"><span style={{marginRight:3}}>{contactIcon(c)}</span>{c}</span>)}</div>
       </div>
       <div className="r-body">
         <div className="r-sidebar">
@@ -851,9 +780,9 @@ function ResumeContent({ data, tpl }) {
         </div>
         <div className="r-main">
           {exps.length>0&&<div className="r-sec"><div className="r-sec-title">Experience</div>
-            {exps.map((e,i)=>(
-              <div key={i} style={{marginBottom:14}}><div className="r-exp-role">{e.role}</div><div className="r-exp-co">{e.company}</div><div className="r-exp-dur">{e.duration}</div><Bullets bullets={e.bullets} dotEl={<span className="r-dot">◈</span>}/></div>
-            ))}
+            {exps.map((e,i)=>{const bs=e.bullets?.split("\n").filter(b=>b.trim())||[];return(
+              <div key={i} style={{marginBottom:14}}><div className="r-exp-role">{e.role}</div><div className="r-exp-co">{e.company}</div><div className="r-exp-dur">{e.duration}</div>{bs.map((b,j)=><div key={j} className="r-bullet"><span className="r-dot">◈</span>{b.replace(/^[•\-*]\s*/,"")}</div>)}</div>
+            )})}
           </div>}
         </div>
       </div>
@@ -866,7 +795,7 @@ function ResumeContent({ data, tpl }) {
         <div className="r-header-shape"/><div className="r-header-shape2"/>
         <div className="r-name">{p.name||"Your Name"}</div>
         {p.title&&<div className="r-title">{p.title}</div>}
-        <div className="r-contacts">{contacts.map((c,i)=><span key={i} className="r-contact-pill"><ContactItem c={c}/></span>)}</div>
+        <div className="r-contacts">{contacts.map((c,i)=><span key={i} className="r-contact-pill"><span style={{marginRight:3}}>{contactIcon(c)}</span>{c}</span>)}</div>
       </div>
       <div className="r-body">
         <div className="r-sidebar">
@@ -878,9 +807,9 @@ function ResumeContent({ data, tpl }) {
         </div>
         <div className="r-main">
           {exps.length>0&&<div className="r-sec"><div className="r-sec-title">Work Experience</div>
-            {exps.map((e,i)=>(
-              <div key={i} style={{marginBottom:14}}><div className="r-exp-role">{e.role}</div><div className="r-exp-co">{e.company}</div><div className="r-exp-dur">{e.duration}</div><Bullets bullets={e.bullets} dotEl={<span className="r-dot">▸</span>}/></div>
-            ))}
+            {exps.map((e,i)=>{const bs=e.bullets?.split("\n").filter(b=>b.trim())||[];return(
+              <div key={i} style={{marginBottom:14}}><div className="r-exp-role">{e.role}</div><div className="r-exp-co">{e.company}</div><div className="r-exp-dur">{e.duration}</div>{bs.map((b,j)=><div key={j} className="r-bullet"><span className="r-dot">▸</span>{b.replace(/^[•\-*]\s*/,"")}</div>)}</div>
+            )})}
           </div>}
         </div>
       </div>
@@ -888,7 +817,7 @@ function ResumeContent({ data, tpl }) {
   );
 
   // ── NEW TEMPLATES (teal, dark, orange, minimal, rose) ──
-  const sidebarNew = () => (
+  const sidebarNew = (accentColor, tagBg, tagColor) => (
     <>
       {p.summary&&<div className="r-sec"><div className="r-sec-title">About</div><div className="r-summary">{p.summary}</div></div>}
       {(tech.length||soft.length)>0&&<div className="r-sec"><div className="r-sec-title">Skills</div>
@@ -905,29 +834,29 @@ function ResumeContent({ data, tpl }) {
       {exps.map((e,i)=><div key={i} className="r-exp-item">
         <div className="r-exp-top"><span className="r-exp-role">{e.role}</span>{e.duration&&<span className="r-exp-dur">{e.duration}</span>}</div>
         <div className="r-exp-co">{e.company}</div>
-        <Bullets bullets={e.bullets} dotEl={<span className="r-dot">◆</span>}/>
+        {(e.bullets?.split("\n").filter(b=>b.trim())||[]).map((b,j)=><div key={j} className="r-bullet"><span className="r-dot">◆</span><span>{b.replace(/^[•\-*]\s*/,"")}</span></div>)}
       </div>)}
     </div>
   ):null;
 
   if(tpl==="teal"||tpl==="dark"||tpl==="rose") return(
     <div className={`tpl-${tpl}`}>
-      <div className="r-header"><div className="r-name">{p.name||"Your Name"}</div>{p.title&&<div className="r-title">{p.title}</div>}<div className="r-contacts">{contacts.map((c,i)=><ContactItem key={i} c={c}/>)}</div></div>
+      <div className="r-header"><div className="r-name">{p.name||"Your Name"}</div>{p.title&&<div className="r-title">{p.title}</div>}<div className="r-contacts">{contacts.map((c,i)=><span key={i} className="r-contact-item"><span style={{marginRight:3}}>{contactIcon(c)}</span>{c}</span>)}</div></div>
       <div className="r-body"><div className="r-sidebar">{sidebarNew()}</div><div className="r-main">{mainExpNew()}</div></div>
     </div>
   );
   if(tpl==="orange") return(
     <div className="tpl-orange">
-      <div className="r-header"><div className="r-header-inner"><div><div className="r-name">{p.name||"Your Name"}</div>{p.title&&<div className="r-title">{p.title}</div>}</div><div className="r-contacts">{contacts.map((c,i)=><ContactItem key={i} c={c}/>)}</div></div></div>
+      <div className="r-header"><div className="r-header-inner"><div><div className="r-name">{p.name||"Your Name"}</div>{p.title&&<div className="r-title">{p.title}</div>}</div><div className="r-contacts">{contacts.map((c,i)=><span key={i} className="r-contact-item"><span style={{marginRight:3}}>{contactIcon(c)}</span>{c}</span>)}</div></div></div>
       <div className="r-body"><div className="r-two-col"><div>{sidebarNew()}</div><div>{mainExpNew()}</div></div></div>
     </div>
   );
   if(tpl==="minimal") return(
     <div className="tpl-minimal">
       <div className="r-name">{p.name||"Your Name"}</div>{p.title&&<div className="r-title">{p.title}</div>}
-      <div className="r-contacts">{contacts.map((c,i)=><ContactItem key={i} c={c}/>)}</div>
+      <div className="r-contacts">{contacts.map((c,i)=><span key={i} className="r-contact-item"><span style={{marginRight:3}}>{contactIcon(c)}</span>{c}</span>)}</div>
       {p.summary&&<><div className="r-sec-title">Summary</div><div className="r-summary" style={{marginBottom:8}}>{p.summary}</div></>}
-      {exps.length>0&&<><div className="r-sec-title">Experience</div>{exps.map((e,i)=><div key={i} className="r-exp-item"><div className="r-exp-top"><span className="r-exp-role">{e.role}</span><span className="r-exp-dur">{e.duration}</span></div><div className="r-exp-co">{e.company}</div><Bullets bullets={e.bullets} dotEl={<span className="r-dot">—</span>}/></div>)}</>}
+      {exps.length>0&&<><div className="r-sec-title">Experience</div>{exps.map((e,i)=><div key={i} className="r-exp-item"><div className="r-exp-top"><span className="r-exp-role">{e.role}</span><span className="r-exp-dur">{e.duration}</span></div><div className="r-exp-co">{e.company}</div>{(e.bullets?.split("\n").filter(b=>b.trim())||[]).map((b,j)=><div key={j} className="r-bullet"><span className="r-dot">—</span><span>{b.replace(/^[•\-*]\s*/,"")}</span></div>)}</div>)}</>}
       {(tech.length||soft.length||langs.length)>0&&<><div className="r-sec-title">Skills</div><div style={{display:"flex",flexWrap:"wrap",gap:4,marginBottom:10}}>{[...tech,...soft,...langs].map((s,i)=><span key={i} className="r-tag">{s}</span>)}</div></>}
       {edus.length>0&&<><div className="r-sec-title">Education</div>{edus.map((e,i)=><div key={i} style={{marginBottom:8}}><div className="r-edu-deg">{e.degree}</div><div className="r-edu-school">{e.school}{e.year&&` · ${e.year}`}</div></div>)}</>}
       {certs.length>0&&<><div className="r-sec-title">Certifications</div>{certs.map((c,i)=><div key={i} style={{fontSize:9,color:"#444",marginBottom:2}}>— {c}</div>)}</>}
@@ -1042,7 +971,7 @@ async function genWord(d) {
 ══════════════════════════════════════════════════════ */
 export default function App() {
   const jsPdfReady = useScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js");
-  const docxReady  = useScript("https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.js");
+  const docxReady  = useScript("https://unpkg.com/docx@8.5.0/build/index.js");
 
   const [data, setData]           = useState(INIT);
   const [tpl, setTpl]             = useState("modern");
@@ -1061,9 +990,6 @@ export default function App() {
   const [fmt, setFmt]             = useState("pdf");
   const [card, setCard]           = useState({ num:"", exp:"", cvv:"", name:"" });
   const [dlLoading, setDlLoading] = useState(null);
-  const [showUpload, setShowUpload] = useState(false);
-  const [uploading, setUploading]  = useState(false);
-  const uploadRef = useRef(null);
 
   const tog = k => setOpenSecs(p=>({...p,[k]:!p[k]}));
   const setP = (f,v) => setData(p=>({...p,personal:{...p.personal,[f]:v}}));
@@ -1082,56 +1008,30 @@ export default function App() {
     if(!data.personal.name){alert("Please enter your name to continue.");return;}
     setGenerating(true); setAiResume(null); setAts(null); setSuggestions([]);
     try {
-      const res = await fetch("/api/analyze", {
+      const res = await fetch("https://api.anthropic.com/v1/messages",{
         method:"POST", headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({ type:"generate", resumeText: resumeText() })
+        body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1600,messages:[{role:"user",content:`You are an expert resume writer. Polish this resume and return ONLY valid JSON, no markdown.\n\nReturn:\n{\n  "personal":{"name":"","title":"","email":"","phone":"","location":"","linkedin":"","summary":"2-3 powerful ATS-rich sentences with keywords"},\n  "experience":[{"id":1,"company":"","role":"","duration":"","bullets":"strong action verb bullet\\nquantified metric bullet\\nimpact bullet"}],\n  "education":[{"id":1,"school":"","degree":"","year":"","gpa":""}],\n  "skills":{"technical":"comma-separated","soft":"comma-separated","languages":"comma-separated"},\n  "certifications":"one per line"\n}\n\nRules: Start bullets with strong verbs (Led, Achieved, Delivered, Grew, Reduced, Managed). Add realistic metrics. Make summary ATS-optimized. Keep empty as empty string.\n\n${resumeText()}`}]})
       });
-      const json = await res.json();
-      if(json.success && json.data) {
-        setAiResume(json.data); setStep(1);
-      } else {
-        // Fallback: call Anthropic directly (client-side)
-        const r2 = await fetch("https://api.anthropic.com/v1/messages",{
-          method:"POST", headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:2400,messages:[{role:"user",content:`You are an expert resume writer. Polish this resume and return ONLY valid JSON, no markdown.\n\nReturn:\n{\n  "personal":{"name":"","title":"","email":"","phone":"","location":"","linkedin":"","summary":"3 powerful ATS-rich sentences with keywords, years of experience, key achievement, measurable outcome"},\n  "experience":[{"id":1,"company":"","role":"","duration":"","bullets":"Strong action verb + specific outcome with metric\\nAnother achievement with quantified impact\\nThird result showing scope or scale\\nFourth bullet showing cross-team or leadership impact"}],\n  "education":[{"id":1,"school":"","degree":"","year":"","gpa":""}],\n  "skills":{"technical":"comma-separated, add 3-5 relevant missing keywords","soft":"comma-separated","languages":"comma-separated"},\n  "certifications":"one per line"\n}\n\nRules: Start bullets with: Led, Architected, Delivered, Grew, Reduced, Built, Launched, Increased, Managed, Designed, Optimized, Spearheaded, Engineered. Add realistic metrics (%, $, team size, time saved). Make summary ATS-optimized for their specific role. Each experience should have 4-5 strong bullets.\n\n${resumeText()}`}]})
-        });
-        const d2 = await r2.json();
-        const parsed = JSON.parse(d2.content?.[0]?.text.replace(/```json|```/g,"").trim()||"{}");
-        setAiResume(parsed); setStep(1);
-      }
-    } catch(e){ 
-      console.error("Generate error:", e);
-      setAiResume(data); setStep(1); 
-    } finally { setGenerating(false); }
+      const d2 = await res.json();
+      const parsed = JSON.parse(d2.content?.[0]?.text.replace(/```json|```/g,"").trim()||"{}");
+      setAiResume(parsed); setStep(1);
+    } catch(e){ setAiResume(data); setStep(1); } finally { setGenerating(false); }
   };
 
   /* ATS ANALYSIS + SUGGESTIONS */
   const runAts = async () => {
-    setAtsLoading(true); setAts(null); setSuggestions([]); setApplied({});
+    setAtsLoading(true); setAts(null); setSuggestions([]);
     try {
-      const res = await fetch("/api/analyze", {
+      const res = await fetch("https://api.anthropic.com/v1/messages",{
         method:"POST", headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({ type:"analyze", resumeText: resumeText() })
+        body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1200,messages:[{role:"user",content:`Analyze this resume for ATS and provide suggestions. Return ONLY valid JSON:\n{\n  "score":<0-100>,\n  "strengths":["strength1","strength2","strength3"],\n  "improvements":["improvement1","improvement2","improvement3"],\n  "keywords_found":["kw1","kw2","kw3","kw4","kw5"],\n  "keywords_missing":["kw1","kw2","kw3"],\n  "suggestions":[\n    {"id":"s1","type":"enhance","field":"summary","label":"Enhance Professional Summary","description":"Your summary can be stronger. Suggested: add your years of experience and key achievement.","autoText":"Results-driven professional with proven track record of delivering impactful solutions and driving measurable business outcomes."},\n    {"id":"s2","type":"add","field":"skills","label":"Add In-Demand Skills","description":"Consider adding trending industry keywords to improve ATS match rate.","autoText":"Problem Solving, Cross-functional Collaboration, Data Analysis"},\n    {"id":"s3","type":"modify","field":"bullets","label":"Quantify Achievements","description":"Add specific numbers/percentages to your bullet points for stronger impact.","autoText":""},\n    {"id":"s4","type":"enhance","field":"certifications","label":"Add Certifications","description":"Certifications significantly boost ATS scores. Consider adding relevant ones.","autoText":""}\n  ],\n  "overall_tip":"One key insight for this candidate"\n}\n\nResume:\n${resumeText()}`}]})
       });
-      const json = await res.json();
-      if(json.success && json.data) {
-        setAts(json.data); setSuggestions(json.data.suggestions||[]); setStep(2);
-      } else { throw new Error("API failed"); }
+      const d2 = await res.json();
+      const parsed = JSON.parse(d2.content?.[0]?.text.replace(/```json|```/g,"").trim()||"{}");
+      setAts(parsed); setSuggestions(parsed.suggestions||[]); setStep(2);
     } catch(e){
-      // Fallback: direct call with deeply personalized prompt
-      try {
-        const rt = resumeText();
-        const r2 = await fetch("https://api.anthropic.com/v1/messages",{
-          method:"POST", headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:2000,messages:[{role:"user",content:`You are a senior ATS expert and career coach. Analyze this specific resume deeply and return ONLY valid JSON.\n\nYou MUST:\n- Read the actual content and provide SPECIFIC feedback (mention their actual role, company, skills)\n- Write autoText that is directly tailored to their background — NOT generic placeholder text\n- For summary autoText: write a full 2-3 sentence summary using their actual name/role/years/skills\n- For skills autoText: add 5-8 specific missing keywords relevant to their exact tech stack/industry\n- For bullets autoText: rewrite their weakest bullet with a specific metric added\n- Make each suggestion description reference something SPECIFIC from their resume\n\nReturn this JSON:\n{\n  "score":<0-100>,\n  "grade":"<Excellent|Good|Fair|Needs Work>",\n  "overall_tip":"One specific actionable tip mentioning their actual role or company",\n  "strengths":["specific strength 1 from their resume","specific strength 2","specific strength 3"],\n  "improvements":["specific improvement 1 referencing their content","improvement 2","improvement 3"],\n  "keywords_found":["actual keyword from resume 1","kw2","kw3","kw4","kw5"],\n  "keywords_missing":["missing kw relevant to their role 1","kw2","kw3","kw4"],\n  "suggestions":[\n    {"id":"s1","type":"enhance","priority":"high","field":"summary","label":"Strengthen Your Professional Summary","description":"<specific description referencing their actual current summary and what is missing>","autoText":"<Full personalized 3-sentence summary using their actual role, company, tech stack, and realistic years of experience>"},\n    {"id":"s2","type":"add","priority":"high","field":"skills","label":"Add High-Demand Industry Keywords","description":"<specific description naming keywords missing from their tech stack>","autoText":"<comma-separated list of 6-8 specific missing skills relevant to their exact role and tech stack>"},\n    {"id":"s3","type":"modify","priority":"medium","field":"bullets","label":"Quantify Your Best Achievement","description":"<reference a specific bullet from their resume that lacks metrics and explain how to improve it>","autoText":"<a rewritten version of one of their actual bullets, improved with specific metric/number/percentage>"},\n    {"id":"s4","type":"enhance","priority":"medium","field":"certifications","label":"Add High-Value Certifications","description":"<specific certifications relevant to their exact role and tech stack that would boost score>","autoText":"<2-3 specific certifications as newline-separated list, relevant to their role>"}\n  ]\n}\n\nResume:\n${rt}`}]})
-        });
-        const d2 = await r2.json();
-        const parsed = JSON.parse(d2.content?.[0]?.text.replace(/```json|```/g,"").trim()||"{}");
-        setAts(parsed); setSuggestions(parsed.suggestions||[]); setStep(2);
-      } catch(e2) {
-        setAts({score:72,strengths:["Relevant technical experience","Education section present","Skills listed"],improvements:["Add quantified metrics to bullet points","Expand professional summary with keywords","Include more industry certifications"],keywords_found:["Leadership","Communication","Management"],keywords_missing:["ROI","Agile","KPIs","Stakeholder"],overall_tip:"Focus on adding specific numbers and percentages to your bullet points."});
-        setSuggestions([{id:"s1",type:"enhance",field:"summary",label:"Strengthen Summary",description:"Your summary needs specific years of experience, key technical skills, and quantified achievements.",autoText:""},{id:"s2",type:"add",field:"skills",label:"Add High-Value Keywords",description:"Include trending skills to improve ATS match rate.",autoText:"Agile, KPI Tracking, Stakeholder Management, Data-Driven Decision Making"},{id:"s3",type:"modify",field:"bullets",label:"Quantify Your Impact",description:"Add specific percentages, numbers, or time savings to your bullet points.",autoText:""}]);
-      }
+      setAts({score:72,strengths:["Relevant work experience","Education section present","Skills listed"],improvements:["Add more quantified achievements","Expand professional summary","Include more industry keywords"],keywords_found:["Leadership","Communication","Management"],keywords_missing:["ROI","Agile","KPIs","Stakeholder"],overall_tip:"Focus on adding metrics to your bullet points to stand out."});
+      setSuggestions([{id:"s1",type:"enhance",field:"summary",label:"Strengthen Summary",description:"Add your years of experience and key achievement to make your summary more impactful.",autoText:"Accomplished professional with 5+ years of experience delivering measurable results and leading cross-functional teams."},{id:"s2",type:"add",field:"skills",label:"Add High-Value Keywords",description:"Include trending skills to improve ATS match rate.",autoText:"Agile, KPI Tracking, Stakeholder Management, Data-Driven Decision Making"},{id:"s3",type:"modify",field:"bullets",label:"Quantify Your Impact",description:"Bullet points with numbers perform 40% better in ATS systems. Edit your bullet points to include percentages, numbers, or time frames.",autoText:""}]);
     } finally { setAtsLoading(false); }
   };
 
@@ -1165,87 +1065,18 @@ export default function App() {
     const d = aiResume||data;
     setDlLoading(f);
     try {
-      if(f==="pdf"){
-        if(!jsPdfReady||!window.jspdf){alert("PDF library loading, try again in a moment.");return;}
-        genPDF(d,tpl);
-      } else {
-        // Wait up to 15s for docx library
+      if(f==="pdf"){ if(!jsPdfReady||!window.jspdf){alert("PDF library loading, try again.");return;} genPDF(d,tpl); }
+      else {
+        if(!docxReady){ alert("Word library loading, please wait 3 seconds and try again."); return; }
+        // FIX 5: wait for window.docx to be fully ready
         let tries = 0;
-        while(!window.docx && tries < 30){ await new Promise(r=>setTimeout(r,500)); tries++; }
-        if(!window.docx){ 
-          // Try loading it again
-          await new Promise((resolve, reject) => {
-            const s = document.createElement("script");
-            s.src = "https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.js";
-            s.onload = resolve; s.onerror = reject;
-            document.head.appendChild(s);
-          });
-          await new Promise(r=>setTimeout(r,1000));
-        }
+        while(!window.docx && tries < 10){ await new Promise(r=>setTimeout(r,500)); tries++; }
         if(!window.docx){ alert("Word library failed to load. Please try PDF instead or refresh the page."); return; }
         await genWord(d);
       }
-    } catch(err){ console.error("Download error:", err); alert("Download failed: "+err.message); }
-    finally { setDlLoading(null); }
-  };
-
-  /* UPLOAD & EXTRACT RESUME */
-  const handleUpload = async (file) => {
-    if(!file) return;
-    setUploading(true); setShowUpload(false);
-    try {
-      // Read file as base64
-      const base64 = await new Promise((res, rej) => {
-        const r = new FileReader();
-        r.onload = () => res(r.result.split(",")[1]);
-        r.onerror = () => rej(new Error("Read failed"));
-        r.readAsDataURL(file);
-      });
-      const isPdf = file.type === "application/pdf";
-      const isDocx = file.name.endsWith(".docx") || file.name.endsWith(".doc");
-
-      let resumeTextContent = "";
-      if(isPdf) {
-        // Send PDF to Claude for extraction
-        const res = await fetch("https://api.anthropic.com/v1/messages",{
-          method:"POST", headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:3000,messages:[{role:"user",content:[
-            {type:"document",source:{type:"base64",media_type:"application/pdf",data:base64}},
-            {type:"text",text:"Extract ALL content from this resume as plain text. Include every detail: name, contact info, summary, all work experience with dates and bullet points, education, skills, certifications. Return plain text only."}
-          ]}]})
-        });
-        const json = await res.json();
-        resumeTextContent = json.content?.[0]?.text || "";
-      } else {
-        // For DOCX, use mammoth if available or read as text
-        const text = await file.text().catch(()=>"");
-        resumeTextContent = text;
-      }
-
-      if(!resumeTextContent){ alert("Could not read file content. Please try a PDF."); setUploading(false); return; }
-
-      // Now parse into structured data
-      const parseRes = await fetch("https://api.anthropic.com/v1/messages",{
-        method:"POST", headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:3000,messages:[{role:"user",content:`Extract resume data from the text below and return ONLY valid JSON matching this exact structure:\n{\n  "personal":{"name":"","title":"","email":"","phone":"","location":"","linkedin":"","summary":""},\n  "experience":[{"id":1,"company":"","role":"","duration":"","bullets":"bullet1\\nbullet2\\nbullet3"}],\n  "education":[{"id":1,"school":"","degree":"","year":"","gpa":""}],\n  "skills":{"technical":"comma-separated","soft":"comma-separated","languages":"comma-separated"},\n  "certifications":"one per line"\n}\n\nRules:\n- Extract EXACTLY as written, do not improve or rewrite\n- Each experience entry must have bullets as newline-separated string\n- Combine all skills into appropriate categories\n- If a field is not found, leave as empty string\n- IDs should be sequential numbers\n\nResume text:\n${resumeTextContent}`}]})
-      });
-      const pJson = await parseRes.json();
-      const parsed = JSON.parse(pJson.content?.[0]?.text.replace(/```json|```/g,"").trim()||"{}");
-      
-      if(parsed.personal?.name) {
-        // Ensure IDs are present
-        if(parsed.experience) parsed.experience = parsed.experience.map((e,i)=>({...e,id:i+1}));
-        if(parsed.education) parsed.education = parsed.education.map((e,i)=>({...e,id:100+i}));
-        setData(parsed);
-        setOpenSecs({personal:true,exp:true,edu:false,skills:false,cert:false});
-        alert(`✅ Resume extracted! ${parsed.personal.name}'s data has been filled in. Review and click Generate AI Resume.`);
-      } else {
-        alert("Could not extract resume data. Please fill in the form manually.");
-      }
-    } catch(err){ 
-      console.error("Upload error:", err);
-      alert("Upload failed: "+err.message+". Please fill in the form manually."); 
-    } finally { setUploading(false); }
+    } catch(err){alert("Download failed: "+err.message);}
+    finally{setDlLoading(null);}
+    // FIX 2: Do NOT reset paid or close modal — user can re-download in same session
   };
 
   const hasName = !!data.personal.name;
@@ -1394,10 +1225,6 @@ export default function App() {
                 </div>
 
                 <div className="gen-area">
-                  <input ref={uploadRef} type="file" accept=".pdf,.doc,.docx" style={{display:"none"}} onChange={e=>{if(e.target.files[0])handleUpload(e.target.files[0]);}}/>
-                  <button className="upload-resume-btn" disabled={uploading} onClick={()=>setShowUpload(true)}>
-                    {uploading?<><div className="spin-dark"/>Extracting resume data...</>:<>📂 Upload Existing Resume (Auto-fill)</>}
-                  </button>
                   <button className="gen-btn" onClick={generate} disabled={generating||!hasName}>
                     {generating?<><div className="spin-sm"/>AI is building your resume...</>:<>✨ Generate AI Resume Preview</>}
                   </button>
@@ -1430,16 +1257,9 @@ export default function App() {
             )}
 
             {aiResume&&!generating&&(
-              <>
-                <div className="preview-edit-notice">
-                  ✏️ <span><strong>Tip:</strong> You can click any text in the preview below to edit it directly.</span>
-                </div>
-                <div className="sheet-wrap" contentEditable suppressContentEditableWarning
-                  style={{outline:"none",cursor:"text"}}
-                  onInput={()=>{/* edits are visual only in preview */}}>
-                  <ResumeContent data={previewData} tpl={tpl}/>
-                </div>
-              </>
+              <div className="sheet-wrap">
+                <ResumeContent data={previewData} tpl={tpl}/>
+              </div>
             )}
           </div>
 
@@ -1631,39 +1451,6 @@ export default function App() {
               </button>
             </div>
             <div className="success-note">✓ Both formats included · Download multiple times anytime</div>
-          </div>
-        </div>
-      )}
-      {/* UPLOAD RESUME MODAL */}
-      {showUpload&&(
-        <div className="modal-overlay" onClick={e=>e.target===e.currentTarget&&setShowUpload(false)}>
-          <div className="upload-modal">
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
-              <div>
-                <h2 style={{fontSize:18,fontWeight:800,color:"var(--ink)",letterSpacing:"-0.3px",marginBottom:4}}>Upload Existing Resume</h2>
-                <p style={{fontSize:11.5,color:"var(--ink3)",lineHeight:1.5}}>We'll extract all your details automatically — no re-typing needed</p>
-              </div>
-              <button onClick={()=>setShowUpload(false)} style={{background:"none",border:"none",fontSize:20,cursor:"pointer",color:"var(--ink3)",lineHeight:1}}>×</button>
-            </div>
-            <div className="upload-dropzone" onClick={()=>uploadRef.current?.click()}
-              onDragOver={e=>{e.preventDefault();e.currentTarget.classList.add("drag")}}
-              onDragLeave={e=>e.currentTarget.classList.remove("drag")}
-              onDrop={e=>{e.preventDefault();e.currentTarget.classList.remove("drag");const f=e.dataTransfer.files[0];if(f){setShowUpload(false);handleUpload(f);}}}>
-              <div className="upload-dropzone-icon">📄</div>
-              <h3>Drop your resume here</h3>
-              <p>or click to browse files<br/>AI will extract all your details instantly</p>
-              <div className="upload-formats">
-                <span className="upload-fmt-pill pdf">PDF</span>
-                <span className="upload-fmt-pill docx">DOCX</span>
-              </div>
-            </div>
-            <div style={{marginTop:16,padding:"12px 16px",background:"#f0fdf4",borderRadius:"var(--radius)",border:"1px solid #bbf7d0"}}>
-              <div style={{fontSize:11,fontWeight:600,color:"#166534",lineHeight:1.6}}>
-                ✅ What gets extracted automatically:<br/>
-                Name, contact info, work experience with bullets, education, skills, certifications
-              </div>
-            </div>
-            <button onClick={()=>setShowUpload(false)} style={{marginTop:14,width:"100%",background:"none",border:"1.5px solid var(--border)",borderRadius:"var(--radius-sm)",padding:"9px",fontSize:12,color:"var(--ink3)",cursor:"pointer",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:600}}>Cancel</button>
           </div>
         </div>
       )}
