@@ -1000,41 +1000,161 @@ function genPDF(d, tpl) {
    WORD GENERATOR
 ══════════════════════════════════════════════════════ */
 async function genWord(d) {
-  const { Document, Packer, Paragraph, TextRun, AlignmentType, BorderStyle, ShadingType } = window.docx;
-  const navy="1B2A4A", gold="B7860D", purple="7C3AED";
-  const sep = () => new Paragraph({ children:[new TextRun({text:"─".repeat(65),size:12,color:"CCCCCC",font:"Courier New"})], spacing:{after:100}});
-  const secHdr = (t, color="1B2A4A") => new Paragraph({
-    children:[new TextRun({text:t.toUpperCase(),bold:true,size:16,color,font:"Calibri",characterSpacing:100})],
-    spacing:{before:240,after:80},
-    border:{bottom:{style:BorderStyle.SINGLE,size:4,color,space:2}}
+  // Safely access docx — different CDN builds expose differently
+  const docxLib = window.docx || window.DocxJS || window;
+  const Document = docxLib.Document;
+  const Packer   = docxLib.Packer;
+  const Paragraph= docxLib.Paragraph;
+  const TextRun  = docxLib.TextRun;
+  const HeadingLevel = docxLib.HeadingLevel;
+
+  if(!Document||!Packer||!Paragraph||!TextRun) {
+    throw new Error("Word library not fully loaded — please refresh and try again");
+  }
+
+  const navy  = "1B2A4A";
+  const gold  = "B7860D";
+  const grey  = "555555";
+  const light = "888888";
+
+  const makeSecHdr = (text) => new Paragraph({
+    children:[new TextRun({text:text.toUpperCase(), bold:true, size:20, color:navy, font:"Calibri"})],
+    spacing:{before:280, after:100},
+    border:{bottom:{style:"single", size:6, color:"CBD5E1", space:2}}
   });
-  const bullet = t => new Paragraph({
-    children:[new TextRun({text:"▸  "+t.replace(/^[•\-*]\s*/,""),size:19,font:"Calibri",color:"444444"})],
-    spacing:{after:60},indent:{left:240}
+
+  const makeBullet = (text) => new Paragraph({
+    children:[new TextRun({
+      text:"▸  " + text.replace(/^[•\-*▸]\s*/,"").trim(),
+      size:19, font:"Calibri", color:"374151"
+    })],
+    spacing:{after:60},
+    indent:{left:280}
   });
-  const children=[];
-  children.push(new Paragraph({children:[new TextRun({text:d.personal.name||"Your Name",bold:true,size:52,font:"Garamond",color:navy})],spacing:{after:60}}));
-  if(d.personal.title) children.push(new Paragraph({children:[new TextRun({text:d.personal.title,italics:true,size:26,font:"Garamond",color:gold})],spacing:{after:80}}));
-  const contacts=[d.personal.email,d.personal.phone,d.personal.location,d.personal.linkedin].filter(Boolean);
-  if(contacts.length) children.push(new Paragraph({children:[new TextRun({text:contacts.join("   |   "),size:17,font:"Calibri",color:"666666"})],spacing:{after:200},border:{bottom:{style:BorderStyle.SINGLE,size:8,color:gold,space:4}}}));
-  if(d.personal.summary){children.push(secHdr("Professional Summary"));children.push(new Paragraph({children:[new TextRun({text:d.personal.summary,italics:true,size:19,font:"Garamond",color:"444444"})],spacing:{after:200}}))}
-  if(d.experience?.some(e=>e.company||e.role)){children.push(secHdr("Work Experience"));d.experience.filter(e=>e.company||e.role).forEach(e=>{children.push(new Paragraph({children:[new TextRun({text:e.role||"",bold:true,size:22,font:"Calibri",color:navy}),e.duration?new TextRun({text:`   ${e.duration}`,size:17,font:"Calibri",color:gold}):new TextRun("")],spacing:{after:40}}));if(e.company)children.push(new Paragraph({children:[new TextRun({text:e.company,italics:true,size:19,font:"Calibri",color:"666666"})],spacing:{after:80}}));(e.bullets?.split("\n").filter(b=>b.trim())||[]).forEach(b=>children.push(bullet(b)));children.push(new Paragraph({spacing:{after:120}}));});}
-  if(d.education?.some(e=>e.school||e.degree)){children.push(secHdr("Education"));d.education.filter(e=>e.school||e.degree).forEach(e=>{children.push(new Paragraph({children:[new TextRun({text:e.degree||"",bold:true,size:20,font:"Calibri",color:navy})],spacing:{after:40}}));children.push(new Paragraph({children:[new TextRun({text:e.school||"",italics:true,size:18,font:"Calibri",color:"555555"}),e.year?new TextRun({text:`   ${e.year}`,size:16,font:"Calibri",color:"888888"}):new TextRun(""),e.gpa?new TextRun({text:`   GPA: ${e.gpa}`,size:16,font:"Calibri",color:"888888"}):new TextRun("")],spacing:{after:120}}));});}
-  const tech=d.skills?.technical?.split(",").map(s=>s.trim()).filter(Boolean)||[];
-  const soft=d.skills?.soft?.split(",").map(s=>s.trim()).filter(Boolean)||[];
-  const langs=d.skills?.languages?.split(",").map(s=>s.trim()).filter(Boolean)||[];
-  if(tech.length||soft.length||langs.length){children.push(secHdr("Skills"));if(tech.length)children.push(new Paragraph({children:[new TextRun({text:"Technical: ",bold:true,size:18,font:"Calibri",color:navy}),new TextRun({text:tech.join(" · "),size:18,font:"Calibri",color:"444444"})],spacing:{after:80}}));if(soft.length)children.push(new Paragraph({children:[new TextRun({text:"Soft Skills: ",bold:true,size:18,font:"Calibri",color:navy}),new TextRun({text:soft.join(" · "),size:18,font:"Calibri",color:"444444"})],spacing:{after:80}}));if(langs.length)children.push(new Paragraph({children:[new TextRun({text:"Languages: ",bold:true,size:18,font:"Calibri",color:navy}),new TextRun({text:langs.join(" · "),size:18,font:"Calibri",color:"444444"})],spacing:{after:80}}));}
-  const certs=d.certifications?.split("\n").filter(Boolean)||[];
-  if(certs.length){children.push(secHdr("Certifications"));certs.forEach(c=>children.push(bullet(c)));}
-  const doc=new Document({sections:[{properties:{page:{margin:{top:720,bottom:720,left:900,right:900}}},children}]});
-  const blob=await Packer.toBlob(doc);
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement("a");
-  a.href=url;
-  a.download=`${d.personal.name||"resume"}_Resume.docx`;
+
+  const children = [];
+
+  // Name
+  children.push(new Paragraph({
+    children:[new TextRun({text: d.personal?.name||"Your Name", bold:true, size:56, font:"Garamond", color:navy})],
+    spacing:{after:60}
+  }));
+
+  // Title
+  if(d.personal?.title) {
+    children.push(new Paragraph({
+      children:[new TextRun({text: d.personal.title, italics:true, size:24, font:"Calibri", color:gold})],
+      spacing:{after:80}
+    }));
+  }
+
+  // Contacts
+  const contacts = [d.personal?.email, d.personal?.phone, d.personal?.location, d.personal?.linkedin].filter(Boolean);
+  if(contacts.length) {
+    children.push(new Paragraph({
+      children:[new TextRun({text: contacts.join("   |   "), size:17, font:"Calibri", color:grey})],
+      spacing:{after:160},
+      border:{bottom:{style:"single", size:8, color:gold, space:4}}
+    }));
+  }
+
+  // Summary
+  if(d.personal?.summary) {
+    children.push(makeSecHdr("Professional Summary"));
+    children.push(new Paragraph({
+      children:[new TextRun({text: d.personal.summary, italics:true, size:19, font:"Calibri", color:grey})],
+      spacing:{after:200}
+    }));
+  }
+
+  // Experience
+  const exps = d.experience?.filter(e=>e.company||e.role)||[];
+  if(exps.length) {
+    children.push(makeSecHdr("Work Experience"));
+    exps.forEach(e => {
+      children.push(new Paragraph({
+        children:[
+          new TextRun({text: e.role||"", bold:true, size:22, font:"Calibri", color:navy}),
+          e.duration ? new TextRun({text:`   ${e.duration}`, size:17, font:"Calibri", color:gold}) : new TextRun("")
+        ],
+        spacing:{after:40}
+      }));
+      if(e.company) {
+        children.push(new Paragraph({
+          children:[new TextRun({text: e.company, italics:true, size:19, font:"Calibri", color:light})],
+          spacing:{after:80}
+        }));
+      }
+      // Parse bullets smartly
+      const bullets = parseBulletsForWord(e.bullets);
+      bullets.forEach(b => children.push(makeBullet(b)));
+      children.push(new Paragraph({spacing:{after:140}}));
+    });
+  }
+
+  // Education
+  const edus = d.education?.filter(e=>e.school||e.degree)||[];
+  if(edus.length) {
+    children.push(makeSecHdr("Education"));
+    edus.forEach(e => {
+      children.push(new Paragraph({
+        children:[new TextRun({text: e.degree||"", bold:true, size:20, font:"Calibri", color:navy})],
+        spacing:{after:40}
+      }));
+      children.push(new Paragraph({
+        children:[
+          new TextRun({text: e.school||"", italics:true, size:18, font:"Calibri", color:grey}),
+          e.year ? new TextRun({text:`   ${e.year}`, size:16, font:"Calibri", color:light}) : new TextRun(""),
+          e.gpa  ? new TextRun({text:`   GPA: ${e.gpa}`, size:16, font:"Calibri", color:light}) : new TextRun("")
+        ],
+        spacing:{after:120}
+      }));
+    });
+  }
+
+  // Skills
+  const tech  = d.skills?.technical?.split(",").map(s=>s.trim()).filter(Boolean)||[];
+  const soft  = d.skills?.soft?.split(",").map(s=>s.trim()).filter(Boolean)||[];
+  const langs = d.skills?.languages?.split(",").map(s=>s.trim()).filter(Boolean)||[];
+  if(tech.length||soft.length||langs.length) {
+    children.push(makeSecHdr("Skills"));
+    if(tech.length)  children.push(new Paragraph({children:[new TextRun({text:"Technical: ",bold:true,size:18,font:"Calibri",color:navy}),new TextRun({text:tech.join(" · "),size:18,font:"Calibri",color:grey})],spacing:{after:80}}));
+    if(soft.length)  children.push(new Paragraph({children:[new TextRun({text:"Soft Skills: ",bold:true,size:18,font:"Calibri",color:navy}),new TextRun({text:soft.join(" · "),size:18,font:"Calibri",color:grey})],spacing:{after:80}}));
+    if(langs.length) children.push(new Paragraph({children:[new TextRun({text:"Languages: ",bold:true,size:18,font:"Calibri",color:navy}),new TextRun({text:langs.join(" · "),size:18,font:"Calibri",color:grey})],spacing:{after:80}}));
+  }
+
+  // Certifications
+  const certs = d.certifications?.split("\n").filter(Boolean)||[];
+  if(certs.length) {
+    children.push(makeSecHdr("Certifications"));
+    certs.forEach(c => children.push(makeBullet(c)));
+  }
+
+  const doc = new Document({
+    sections:[{
+      properties:{page:{margin:{top:720,bottom:720,left:900,right:900}}},
+      children
+    }]
+  });
+
+  const blob = await Packer.toBlob(doc);
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement("a");
+  a.href     = url;
+  a.download = `${d.personal?.name||"resume"}_Resume.docx`;
   document.body.appendChild(a);
   a.click();
-  setTimeout(()=>{ document.body.removeChild(a); URL.revokeObjectURL(url); }, 200);
+  setTimeout(()=>{ document.body.removeChild(a); URL.revokeObjectURL(url); }, 300);
+}
+
+/* Plain bullet parser for Word (no JSX) */
+function parseBulletsForWord(text) {
+  if(!text) return [];
+  const byNewline = text.split("\n").map(s=>s.trim()).filter(Boolean);
+  if(byNewline.length===1 && byNewline[0].includes(". ")) {
+    return byNewline[0].split(/\.\s+/).map(s=>s.trim()).filter(Boolean);
+  }
+  return byNewline;
 }
 
 /* ══════════════════════════════════════════════════════
@@ -1042,7 +1162,7 @@ async function genWord(d) {
 ══════════════════════════════════════════════════════ */
 export default function App() {
   const jsPdfReady = useScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js");
-  const docxReady  = useScript("https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.js");
+  const docxReady  = useScript("https://unpkg.com/docx@8.5.0/build/index.js");
 
   const [data, setData]           = useState(INIT);
   const [tpl, setTpl]             = useState("modern");
@@ -1169,23 +1289,41 @@ export default function App() {
         if(!jsPdfReady||!window.jspdf){alert("PDF library loading, try again in a moment.");return;}
         genPDF(d,tpl);
       } else {
-        // Wait up to 15s for docx library
-        let tries = 0;
-        while(!window.docx && tries < 30){ await new Promise(r=>setTimeout(r,500)); tries++; }
-        if(!window.docx){ 
-          // Try loading it again
-          await new Promise((resolve, reject) => {
-            const s = document.createElement("script");
-            s.src = "https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.js";
-            s.onload = resolve; s.onerror = reject;
-            document.head.appendChild(s);
-          });
-          await new Promise(r=>setTimeout(r,1000));
+        // Try loading docx library with multiple fallback CDNs
+        const loadDocx = (src) => new Promise((resolve, reject) => {
+          if(window.docx && window.docx.Document) { resolve(); return; }
+          const s = document.createElement("script");
+          s.src = src; s.async = true;
+          s.onload = () => setTimeout(resolve, 800);
+          s.onerror = reject;
+          document.head.appendChild(s);
+        });
+
+        // Wait for existing script or try to load
+        let waited = 0;
+        while((!window.docx || !window.docx.Document) && waited < 8000) {
+          await new Promise(r=>setTimeout(r,500)); waited+=500;
         }
-        if(!window.docx){ alert("Word library failed to load. Please try PDF instead or refresh the page."); return; }
+
+        if(!window.docx || !window.docx.Document) {
+          // Try fallback CDN
+          try {
+            await loadDocx("https://unpkg.com/docx@8.5.0/build/index.js");
+          } catch(e2) {
+            try { await loadDocx("https://cdn.jsdelivr.net/npm/docx@7.8.2/build/index.js"); }
+            catch(e3) { throw new Error("Word library failed to load. Please try PDF format instead."); }
+          }
+        }
+
+        if(!window.docx || !window.docx.Document) {
+          throw new Error("Word library not available. Please try PDF format or refresh the page.");
+        }
         await genWord(d);
       }
-    } catch(err){ console.error("Download error:", err); alert("Download failed: "+err.message); }
+    } catch(err){ 
+      console.error("Download error:", err);
+      alert("Download failed: " + (err.message || "Unknown error. Please try PDF format."));
+    }
     finally { setDlLoading(null); }
   };
 
@@ -1613,24 +1751,28 @@ export default function App() {
 
       {/* SUCCESS MODAL */}
       {showSuccess&&(
-        <div className="modal-overlay">
-          <div className="success-modal">
+        <div className="modal-overlay" onClick={e=>e.target===e.currentTarget&&setShowSuccess(false)}
+          onKeyDown={e=>e.key==="Escape"&&setShowSuccess(false)} tabIndex={-1}
+          style={{outline:"none"}} ref={el=>el&&el.focus()}>
+          <div className="success-modal" style={{position:"relative"}}>
+            <button onClick={()=>setShowSuccess(false)} style={{position:"absolute",top:14,right:16,background:"none",border:"none",fontSize:22,cursor:"pointer",color:"#94a3b8",lineHeight:1,fontFamily:"sans-serif"}}>×</button>
             <div className="success-icon-wrap">🎉</div>
             <h2>Payment Successful!</h2>
             <p>Your AI-enhanced, ATS-optimized resume is ready. Both PDF and Word formats are included in your purchase.</p>
             <div className="success-dl-grid">
-              <button className="sdl-btn pdf-btn" onClick={()=>handleDownload("pdf")}>
+              <button className="sdl-btn pdf-btn" onClick={()=>handleDownload("pdf")} disabled={dlLoading==="pdf"}>
                 <span className="sdl-btn-icon">📄</span>
                 <span className="sdl-btn-name">{dlLoading==="pdf"?"Generating...":"Download PDF"}</span>
                 <span className="sdl-btn-ext">ATS FRIENDLY</span>
               </button>
-              <button className="sdl-btn word-btn" onClick={()=>handleDownload("word")}>
+              <button className="sdl-btn word-btn" onClick={()=>handleDownload("word")} disabled={dlLoading==="word"}>
                 <span className="sdl-btn-icon">📝</span>
                 <span className="sdl-btn-name">{dlLoading==="word"?"Generating...":"Download Word"}</span>
                 <span className="sdl-btn-ext">FULLY EDITABLE</span>
               </button>
             </div>
             <div className="success-note">✓ Both formats included · Download multiple times anytime</div>
+            <button onClick={()=>setShowSuccess(false)} style={{marginTop:16,background:"none",border:"1.5px solid var(--border)",borderRadius:"var(--radius-sm)",padding:"8px 20px",fontSize:12,color:"var(--ink3)",cursor:"pointer",fontFamily:"'Plus Jakarta Sans',sans-serif",fontWeight:600,width:"100%"}}>Close</button>
           </div>
         </div>
       )}
