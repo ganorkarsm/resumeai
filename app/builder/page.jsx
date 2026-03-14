@@ -1332,58 +1332,100 @@ export default function App() {
     if(!file) return;
     setUploading(true); setShowUpload(false);
     try {
-      // Read file as base64
-      const base64 = await new Promise((res, rej) => {
-        const r = new FileReader();
-        r.onload = () => res(r.result.split(",")[1]);
-        r.onerror = () => rej(new Error("Read failed"));
-        r.readAsDataURL(file);
-      });
       const isPdf = file.type === "application/pdf";
-      const isDocx = file.name.endsWith(".docx") || file.name.endsWith(".doc");
+      const isDocx = file.name.toLowerCase().endsWith(".docx") || file.name.toLowerCase().endsWith(".doc");
 
-      let resumeTextContent = "";
+      if(!isPdf && !isDocx) {
+        alert("Please upload a PDF or Word (.docx) file.");
+        setUploading(false); return;
+      }
+
       if(isPdf) {
-        // Send PDF to Claude for extraction
-        const res = await fetch("https://api.anthropic.com/v1/messages",{
-          method:"POST", headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:3000,messages:[{role:"user",content:[
-            {type:"document",source:{type:"base64",media_type:"application/pdf",data:base64}},
-            {type:"text",text:"Extract ALL content from this resume as plain text. Include every detail: name, contact info, summary, all work experience with dates and bullet points, education, skills, certifications. Return plain text only."}
-          ]}]})
+        // Read PDF as base64 and send to secure backend
+        const base64 = await new Promise((res, rej) => {
+          const reader = new FileReader();
+          reader.onload = () => res(reader.result.split(",")[1]);
+          reader.onerror = () => rej(new Error("Failed to read file"));
+          reader.readAsDataURL(file);
         });
+
+        const res = await fetch("/api/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            type: "extract",
+            rawData: { fileBase64: base64, mediaType: "application/pdf", fileName: file.name }
+          })
+        });
+
+        if(!res.ok) {
+          const errJson = await res.json().catch(()=>({}));
+          throw new Error(errJson.error || `Server error ${res.status}`);
+        }
+
         const json = await res.json();
-        resumeTextContent = json.content?.[0]?.text || "";
+        if(json.success && json.data?.personal?.name) {
+          applyExtractedData(json.data);
+        } else {
+          throw new Error("Could not extract resume data from PDF. Please fill in the form manually.");
+        }
+
       } else {
-        // For DOCX, use mammoth if available or read as text
-        const text = await file.text().catch(()=>"");
-        resumeTextContent = text;
+        // DOCX: read as text and send to backend
+        let textContent = "";
+        try {
+          textContent = await file.text();
+          // DOCX is binary XML — if it looks garbled, warn
+          if(textContent.includes("PK\x03\x04") || textContent.charCodeAt(0) === 80) {
+            // Raw DOCX binary, can't parse as plain text
+            textContent = "";
+          }
+        } catch(e) { textContent = ""; }
+
+        if(!textContent || textContent.trim().length < 50) {
+          alert("Word (.docx) files cannot be read directly in the browser.\n\nPlease:\n1. Open your .docx in Word or Google Docs\n2. Export/Download as PDF\n3. Upload the PDF version instead");
+          setUploading(false); return;
+        }
+
+        const res = await fetch("/api/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ type: "extract", resumeText: textContent })
+        });
+
+        if(!res.ok) {
+          const errJson = await res.json().catch(()=>({}));
+          throw new Error(errJson.error || `Server error ${res.status}`);
+        }
+
+        const json = await res.json();
+        if(json.success && json.data?.personal?.name) {
+          applyExtractedData(json.data);
+        } else {
+          throw new Error("Could not extract data. Please fill in the form manually.");
+        }
       }
 
-      if(!resumeTextContent){ alert("Could not read file content. Please try a PDF."); setUploading(false); return; }
-
-      // Now parse into structured data
-      const parseRes = await fetch("https://api.anthropic.com/v1/messages",{
-        method:"POST", headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:3000,messages:[{role:"user",content:`Extract resume data from the text below and return ONLY valid JSON matching this exact structure:\n{\n  "personal":{"name":"","title":"","email":"","phone":"","location":"","linkedin":"","summary":""},\n  "experience":[{"id":1,"company":"","role":"","duration":"","bullets":"bullet1\\nbullet2\\nbullet3"}],\n  "education":[{"id":1,"school":"","degree":"","year":"","gpa":""}],\n  "skills":{"technical":"comma-separated","soft":"comma-separated","languages":"comma-separated"},\n  "certifications":"one per line"\n}\n\nRules:\n- Extract EXACTLY as written, do not improve or rewrite\n- Each experience entry must have bullets as newline-separated string\n- Combine all skills into appropriate categories\n- If a field is not found, leave as empty string\n- IDs should be sequential numbers\n\nResume text:\n${resumeTextContent}`}]})
-      });
-      const pJson = await parseRes.json();
-      const parsed = JSON.parse(pJson.content?.[0]?.text.replace(/```json|```/g,"").trim()||"{}");
-      
-      if(parsed.personal?.name) {
-        // Ensure IDs are present
-        if(parsed.experience) parsed.experience = parsed.experience.map((e,i)=>({...e,id:i+1}));
-        if(parsed.education) parsed.education = parsed.education.map((e,i)=>({...e,id:100+i}));
-        setData(parsed);
-        setOpenSecs({personal:true,exp:true,edu:false,skills:false,cert:false});
-        alert(`✅ Resume extracted! ${parsed.personal.name}'s data has been filled in. Review and click Generate AI Resume.`);
-      } else {
-        alert("Could not extract resume data. Please fill in the form manually.");
-      }
-    } catch(err){ 
+    } catch(err) {
       console.error("Upload error:", err);
-      alert("Upload failed: "+err.message+". Please fill in the form manually."); 
-    } finally { setUploading(false); }
+      alert("Upload failed: " + err.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const applyExtractedData = (parsed) => {
+    // Ensure IDs are valid numbers
+    if(parsed.experience) parsed.experience = parsed.experience.map((e,i)=>({...e, id: i+1}));
+    if(parsed.education)  parsed.education  = parsed.education.map((e,i) =>({...e, id: 100+i}));
+    // Ensure required arrays exist
+    if(!parsed.experience?.length) parsed.experience = [{id:1,company:"",role:"",duration:"",bullets:""}];
+    if(!parsed.education?.length)  parsed.education  = [{id:100,school:"",degree:"",year:"",gpa:""}];
+    if(!parsed.skills) parsed.skills = {technical:"",soft:"",languages:""};
+    if(!parsed.certifications) parsed.certifications = "";
+    setData(parsed);
+    setOpenSecs({personal:true, exp:true, edu:true, skills:true, cert:false});
+    alert(`✅ Resume extracted for ${parsed.personal.name}!\n\nAll sections have been filled in. Review the details and click "Generate AI Resume" to enhance it.`);
   };
 
   const hasName = !!data.personal.name;
