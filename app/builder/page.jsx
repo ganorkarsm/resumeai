@@ -735,17 +735,19 @@ function Thumb({ id }) {
   );
 }
 
-/* ══════════════════════════════════════════════════════
-   RESUME RENDERERS
-══════════════════════════════════════════════════════ */
 function ContactItem({ c }) {
-  const isLinkedIn = c.toLowerCase().includes('linkedin');
+  if (!c) return null;
+  const v = c.trim();
+  const isEmail    = v.includes('@');
+  const isLinkedIn = v.toLowerCase().includes('linkedin');
+  const isPhone    = !isEmail && !isLinkedIn && (v.replace(/[^0-9]/g,'').length >= 7 || v.startsWith('+'));
+
   return (
-    <span className="r-contact-item" style={{display:'inline-flex',alignItems:'center',gap:4}}>
-      {isLinkedIn
-        ? <span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',width:11,height:11,background:'#0A66C2',borderRadius:2,color:'#fff',fontSize:7,fontWeight:900,fontFamily:'sans-serif',flexShrink:0,lineHeight:1}}>in</span>
-        : <span style={{marginRight:1}}>{contactIcon(c)}</span>
-      }
+    <span className="r-contact-item" style={{display:'inline-flex', alignItems:'center', gap:4}}>
+      {isEmail    && <span style={{fontSize:9}}>✉</span>}
+      {isPhone    && <span style={{fontSize:9}}>📱</span>}
+      {isLinkedIn && <span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',width:11,height:11,background:'#0A66C2',borderRadius:2,color:'#fff',fontSize:7,fontWeight:900,fontFamily:'sans-serif',flexShrink:0,lineHeight:1}}>in</span>}
+      {!isEmail && !isPhone && !isLinkedIn && <span style={{fontSize:9}}>📍</span>}
       {c}
     </span>
   );
@@ -1516,7 +1518,7 @@ export default function App() {
         <nav className="topbar">
           <div className="brand">
             <div className="brand-icon">R</div>
-            <span className="brand-name">Resume<span>AI</span></span>
+            <span className="brand-name">Resume<span>Pro</span></span>
           </div>
           <div className="topbar-mid">
             {STEPS.map((s,i)=>(
@@ -1816,7 +1818,7 @@ export default function App() {
             <div className="modal-body">
               <div className="price-card">
                 <div>
-                  <div className="price-amount"><span>₹</span>199</div>
+                  <div className="price-amount"><span>₹</span>99</div>
                   <div style={{fontSize:11,color:"var(--ink3)",marginTop:4}}>One-time · No subscription</div>
                 </div>
                 <div>
@@ -1855,7 +1857,7 @@ export default function App() {
                   <input className="pay-inp" value={card.exp} onChange={e=>setCard(p=>({...p,exp:e.target.value}))} placeholder="MM / YY" maxLength={7}/>
                   <input className="pay-inp" value={card.cvv} onChange={e=>setCard(p=>({...p,cvv:e.target.value}))} placeholder="CVV" maxLength={4}/>
                 </div>
-                <button type="submit" className="pay-submit">🔒 Pay ₹199 & Download</button>
+                <button type="submit" className="pay-submit">🔒 Pay ₹99 & Download</button>
               </form>
               <div className="modal-cancel-row"><button onClick={()=>setShowDlModal(false)}>Cancel, go back</button></div>
               <div className="modal-secure">🔒 Secured by Razorpay · 256-bit SSL · PCI Compliant</div>
