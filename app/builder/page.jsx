@@ -715,7 +715,7 @@ function Thumb({ id }) {
 ══════════════════════════════════════════════════════ */
 function ContactItem({ type, c }) {
   if (!c) return null;
-  const labels = { email:'Email', phone:'Mobile', location:'', linkedin:'LinkedIn' };
+  const labels = { email:'Email', phone:'Mobile', location:'Location', linkedin:'LinkedIn' };
   const label = labels[type] || '';
   return (
     <span className="r-contact-item" style={{display:'inline-flex', alignItems:'center'}}>
