@@ -713,10 +713,13 @@ function Thumb({ id }) {
 /* ══════════════════════════════════════════════════════
    RESUME RENDERERS
 ══════════════════════════════════════════════════════ */
-function ContactItem({ c }) {
+function ContactItem({ type, c }) {
   if (!c) return null;
+  const labels = { email:'Email', phone:'Mobile', location:'', linkedin:'LinkedIn' };
+  const label = labels[type] || '';
   return (
-    <span className="r-contact-item" style={{display:'inline-flex', alignItems:'center', gap:3}}>
+    <span className="r-contact-item" style={{display:'inline-flex', alignItems:'center'}}>
+      {label && <span style={{fontWeight:700, marginRight:3}}>{label}:</span>}
       {c}
     </span>
   );
@@ -724,7 +727,14 @@ function ContactItem({ c }) {
 
 function ResumeContent({ data, tpl }) {
   const p = data.personal || {};
-  const contacts = [p.email, p.phone, p.location, p.linkedin].filter(Boolean);
+  // Typed contacts — preserves field names so labels are always correct
+  const contacts = [
+    p.email    && { type:'email',    val:p.email },
+    p.phone    && { type:'phone',    val:p.phone },
+    p.location && { type:'location', val:p.location },
+    p.linkedin && { type:'linkedin', val:p.linkedin },
+  ].filter(Boolean);
+
   const tech = data.skills?.technical?.split(",").map(s=>s.trim()).filter(Boolean)||[];
   const soft = data.skills?.soft?.split(",").map(s=>s.trim()).filter(Boolean)||[];
   const langs = data.skills?.languages?.split(",").map(s=>s.trim()).filter(Boolean)||[];
@@ -737,12 +747,19 @@ function ResumeContent({ data, tpl }) {
     return <>{bs.map((b,j)=><div key={j} className="r-bullet">{dotEl}<span>{b}</span></div>)}</>;
   };
 
+  // Shared contacts renderer used by all templates
+  const Contacts = ({ className }) => (
+    <div className={className||"r-contacts"}>
+      {contacts.map((ct,i)=><ContactItem key={i} type={ct.type} c={ct.val}/>)}
+    </div>
+  );
+
   if (tpl === "modern") return (
     <div className="tpl-modern">
       <div className="r-header">
         <div className="r-name">{p.name||"Your Name"}</div>
         {p.title&&<div className="r-title">{p.title}</div>}
-        <div className="r-contacts">{contacts.map((c,i)=><ContactItem key={i} c={c}/>)}</div>
+        <div className="r-contacts">{<Contacts/>}</div>
       </div>
       <div className="r-body">
         <div className="r-sidebar">
@@ -770,7 +787,7 @@ function ResumeContent({ data, tpl }) {
     <div className="tpl-corp">
       <div className="r-header">
         <div className="r-header-left"><div className="r-name">{p.name||"Your Name"}</div>{p.title&&<div className="r-title">{p.title}</div>}</div>
-        <div className="r-header-right"><div className="r-contacts">{contacts.map((c,i)=><ContactItem key={i} c={c}/>)}</div></div>
+        <div className="r-header-right"><div className="r-contacts">{<Contacts/>}</div></div>
       </div>
       <div className="r-body">
         {p.summary&&<div className="r-sec" style={{paddingTop:16,borderBottom:'1px solid #f1f5f9',paddingBottom:14,paddingLeft:0,paddingRight:0}}><div className="r-sec-title">Professional Summary</div><div className="r-summary">{p.summary}</div></div>}
@@ -797,7 +814,7 @@ function ResumeContent({ data, tpl }) {
     <div className="tpl-simple">
       <div className="r-name">{p.name||"Your Name"}</div>
       {p.title&&<div className="r-title">{p.title}</div>}
-      <div className="r-contacts">{contacts.map((c,i)=><ContactItem key={i} c={c}/>)}</div>
+      <div className="r-contacts">{<Contacts/>}</div>
       {p.summary&&<><div className="r-sec-title">Summary</div><div className="r-summary">{p.summary}</div></>}
       {exps.length>0&&<><div className="r-sec-title" style={{marginTop:14}}>Experience</div>{exps.map((e,i)=>(
         <div key={i} className="r-exp-item"><div className="r-exp-top"><span className="r-exp-role">{e.role}</span><span className="r-exp-dur">{e.duration}</span></div><div className="r-exp-co">{e.company}</div><Bullets bullets={e.bullets} dotEl={<span className="r-dot">–</span>}/></div>
@@ -814,7 +831,7 @@ function ResumeContent({ data, tpl }) {
         <div className="r-header-accent"/>
         <div className="r-name">{p.name||"Your Name"}</div>
         {p.title&&<div className="r-title">{p.title}</div>}
-        <div className="r-contacts">{contacts.map((c,i)=><ContactItem key={i} c={c}/>)}</div>
+        <div className="r-contacts">{<Contacts/>}</div>
       </div>
       <div className="r-body">
         <div className="r-sidebar">
@@ -841,7 +858,7 @@ function ResumeContent({ data, tpl }) {
         <div className="r-header-shape"/><div className="r-header-shape2"/>
         <div className="r-name">{p.name||"Your Name"}</div>
         {p.title&&<div className="r-title">{p.title}</div>}
-        <div className="r-contacts">{contacts.map((c,i)=><span key={i} className="r-contact-pill"><ContactItem c={c}/></span>)}</div>
+        <div className="r-contacts">{<Contacts/>}</div>
       </div>
       <div className="r-body">
         <div className="r-sidebar">
@@ -887,20 +904,20 @@ function ResumeContent({ data, tpl }) {
 
   if(tpl==="teal"||tpl==="dark"||tpl==="rose") return(
     <div className={`tpl-${tpl}`}>
-      <div className="r-header"><div className="r-name">{p.name||"Your Name"}</div>{p.title&&<div className="r-title">{p.title}</div>}<div className="r-contacts">{contacts.map((c,i)=><ContactItem key={i} c={c}/>)}</div></div>
+      <div className="r-header"><div className="r-name">{p.name||"Your Name"}</div>{p.title&&<div className="r-title">{p.title}</div>}<div className="r-contacts">{<Contacts/>}</div></div>
       <div className="r-body"><div className="r-sidebar">{sidebarNew()}</div><div className="r-main">{mainExpNew()}</div></div>
     </div>
   );
   if(tpl==="orange") return(
     <div className="tpl-orange">
-      <div className="r-header"><div className="r-header-inner"><div><div className="r-name">{p.name||"Your Name"}</div>{p.title&&<div className="r-title">{p.title}</div>}</div><div className="r-contacts">{contacts.map((c,i)=><ContactItem key={i} c={c}/>)}</div></div></div>
+      <div className="r-header"><div className="r-header-inner"><div><div className="r-name">{p.name||"Your Name"}</div>{p.title&&<div className="r-title">{p.title}</div>}</div><div className="r-contacts">{<Contacts/>}</div></div></div>
       <div className="r-body"><div className="r-two-col"><div>{sidebarNew()}</div><div>{mainExpNew()}</div></div></div>
     </div>
   );
   if(tpl==="minimal") return(
     <div className="tpl-minimal">
       <div className="r-name">{p.name||"Your Name"}</div>{p.title&&<div className="r-title">{p.title}</div>}
-      <div className="r-contacts">{contacts.map((c,i)=><ContactItem key={i} c={c}/>)}</div>
+      <div className="r-contacts">{<Contacts/>}</div>
       {p.summary&&<><div className="r-sec-title">Summary</div><div className="r-summary" style={{marginBottom:8}}>{p.summary}</div></>}
       {exps.length>0&&<><div className="r-sec-title">Experience</div>{exps.map((e,i)=><div key={i} className="r-exp-item"><div className="r-exp-top"><span className="r-exp-role">{e.role}</span><span className="r-exp-dur">{e.duration}</span></div><div className="r-exp-co">{e.company}</div><Bullets bullets={e.bullets} dotEl={<span className="r-dot">—</span>}/></div>)}</>}
       {(tech.length||soft.length||langs.length)>0&&<><div className="r-sec-title">Skills</div><div style={{display:"flex",flexWrap:"wrap",gap:4,marginBottom:10}}>{[...tech,...soft,...langs].map((s,i)=><span key={i} className="r-tag">{s}</span>)}</div></>}
