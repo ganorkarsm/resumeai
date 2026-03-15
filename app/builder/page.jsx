@@ -952,9 +952,15 @@ function genPDF(d, tpl) {
   doc.setTextColor(255,255,255); doc.setFont("helvetica","bold"); doc.setFontSize(20);
   doc.text(d.personal.name||"Your Name", tpl==="elegant"?W/2:m, 14, tpl==="elegant"?{align:"center"}:{});
   if(d.personal.title){doc.setFont("helvetica","italic");doc.setFontSize(10);doc.setTextColor(200,200,200);doc.text(d.personal.title, tpl==="elegant"?W/2:m, 22, tpl==="elegant"?{align:"center"}:{});}
-  const contacts=[d.personal.email,d.personal.phone,d.personal.location,d.personal.linkedin].filter(Boolean);
+  const p = d.personal || {};
+  const contactParts = [
+    p.email    && `Email: ${p.email}`,
+    p.phone    && `Mobile: ${p.phone}`,
+    p.location && `Location: ${p.location}`,
+    p.linkedin && `LinkedIn: ${p.linkedin}`,
+  ].filter(Boolean);
   doc.setFont("helvetica","normal");doc.setFontSize(8);doc.setTextColor(180,190,200);
-  doc.text(contacts.join("   ·   "),tpl==="elegant"?W/2:m,30,tpl==="elegant"?{align:"center"}:{});
+  doc.text(contactParts.join("   |   "),tpl==="elegant"?W/2:m,30,tpl==="elegant"?{align:"center"}:{});
   y=46;
 
   const secTitle=(t,x,yy,w)=>{
@@ -1040,11 +1046,16 @@ async function genWord(d) {
     }));
   }
 
-  // Contacts
-  const contacts = [d.personal?.email, d.personal?.phone, d.personal?.location, d.personal?.linkedin].filter(Boolean);
-  if(contacts.length) {
+  // Contacts with labels
+  const contactParts = [
+    d.personal?.email    && `Email: ${d.personal.email}`,
+    d.personal?.phone    && `Mobile: ${d.personal.phone}`,
+    d.personal?.location && `Location: ${d.personal.location}`,
+    d.personal?.linkedin && `LinkedIn: ${d.personal.linkedin}`,
+  ].filter(Boolean);
+  if(contactParts.length) {
     children.push(new Paragraph({
-      children:[new TextRun({text: contacts.join("   |   "), size:17, font:"Calibri", color:grey})],
+      children:[new TextRun({text: contactParts.join("   |   "), size:17, font:"Calibri", color:grey})],
       spacing:{after:160},
       border:{bottom:{style:"single", size:8, color:gold, space:4}}
     }));
