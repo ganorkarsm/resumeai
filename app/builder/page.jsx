@@ -661,9 +661,13 @@ const STEPS = ["Build", "Template", "Score", "Download"];
    TEMPLATE THUMBNAILS
 ══════════════════════════════════════════════════════ */
 function contactIcon(val) {
-  if (val.includes('@')) return '✉';
-  if (val.toLowerCase().includes('linkedin')) return 'in';
-  if (val.replace(/[^0-9]/g, '').length >= 7) return '📱';
+  if (!val) return '📍';
+  const v = val.trim();
+  if (v.includes('@')) return '✉';
+  if (v.toLowerCase().includes('linkedin') || v.toLowerCase().includes('linkedin.com')) return 'in';
+  // Phone: starts with +, or has 7+ digits, or starts with 0 or 9 and has digits
+  const digitsOnly = v.replace(/[^0-9]/g, '');
+  if (digitsOnly.length >= 7 || v.startsWith('+') || /^[\d\s\-().+]{7,}$/.test(v)) return '📱';
   return '📍';
 }
 
@@ -1415,17 +1419,73 @@ export default function App() {
   };
 
   const applyExtractedData = (parsed) => {
+    // Deep-normalize personal fields — handle any key name variations
+    const raw = parsed.personal || parsed.Personal || {};
+    
+    // Normalize personal — look for fields case-insensitively
+    const findField = (obj, ...keys) => {
+      for(const k of keys) {
+        const found = Object.entries(obj).find(([key]) => key.toLowerCase() === k.toLowerCase());
+        if(found && found[1]) return String(found[1]).trim();
+      }
+      return "";
+    };
+
+    const personal = {
+      name:     findField(raw, "name", "full_name", "fullname"),
+      title:    findField(raw, "title", "job_title", "position", "role", "headline"),
+      email:    findField(raw, "email", "email_address", "mail"),
+      phone:    findField(raw, "phone", "phone_number", "mobile", "cell", "contact", "tel"),
+      location: findField(raw, "location", "address", "city", "city_state", "city_country"),
+      linkedin: findField(raw, "linkedin", "linkedin_url", "linkedin_profile", "profile"),
+      summary:  findField(raw, "summary", "professional_summary", "objective", "about", "profile_summary"),
+    };
+
     // Ensure IDs are valid numbers
-    if(parsed.experience) parsed.experience = parsed.experience.map((e,i)=>({...e, id: i+1}));
-    if(parsed.education)  parsed.education  = parsed.education.map((e,i) =>({...e, id: 100+i}));
-    // Ensure required arrays exist
-    if(!parsed.experience?.length) parsed.experience = [{id:1,company:"",role:"",duration:"",bullets:""}];
-    if(!parsed.education?.length)  parsed.education  = [{id:100,school:"",degree:"",year:"",gpa:""}];
-    if(!parsed.skills) parsed.skills = {technical:"",soft:"",languages:""};
-    if(!parsed.certifications) parsed.certifications = "";
-    setData(parsed);
+    const experience = (parsed.experience || parsed.Experience || [])
+      .map((e, i) => ({
+        id: i + 1,
+        company:  String(e.company  || e.Company  || "").trim(),
+        role:     String(e.role     || e.Role     || e.title || e.position || "").trim(),
+        duration: String(e.duration || e.Duration || e.dates || e.period   || "").trim(),
+        bullets:  String(e.bullets  || e.Bullets  || e.responsibilities || e.achievements || "").trim(),
+      }));
+
+    const education = (parsed.education || parsed.Education || [])
+      .map((e, i) => ({
+        id:     100 + i,
+        school: String(e.school || e.School || e.institution || e.university || "").trim(),
+        degree: String(e.degree || e.Degree || e.qualification || "").trim(),
+        year:   String(e.year   || e.Year   || e.graduation_year || e.passing_year || "").trim(),
+        gpa:    String(e.gpa    || e.GPA    || e.cgpa || e.percentage || "").trim(),
+      }));
+
+    const rawSkills = parsed.skills || parsed.Skills || {};
+    const skills = {
+      technical: String(rawSkills.technical || rawSkills.Technical || rawSkills.tech_skills || "").trim(),
+      soft:      String(rawSkills.soft      || rawSkills.Soft      || rawSkills.soft_skills || "").trim(),
+      languages: String(rawSkills.languages || rawSkills.Languages || "").trim(),
+    };
+
+    const certifications = String(parsed.certifications || parsed.Certifications || "").trim();
+
+    const normalized = {
+      personal,
+      experience: experience.length ? experience : [{id:1,company:"",role:"",duration:"",bullets:""}],
+      education:  education.length  ? education  : [{id:100,school:"",degree:"",year:"",gpa:""}],
+      skills,
+      certifications,
+    };
+
+    console.log("Extracted data:", JSON.stringify(normalized.personal, null, 2));
+
+    setData(normalized);
     setOpenSecs({personal:true, exp:true, edu:true, skills:true, cert:false});
-    alert(`✅ Resume extracted for ${parsed.personal.name}!\n\nAll sections have been filled in. Review the details and click "Generate AI Resume" to enhance it.`);
+    
+    const filled = [personal.email, personal.phone, personal.linkedin].filter(Boolean);
+    alert(`✅ Resume extracted for ${personal.name}!\n\n` +
+      `Found: ${filled.length > 0 ? filled.join(", ") : "basic info"}\n\n` +
+      `Review all sections, then click "Generate AI Resume" to enhance it.`);
   };
 
   const hasName = !!data.personal.name;
