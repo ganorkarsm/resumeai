@@ -1199,12 +1199,25 @@ export default function App() {
   const remEdu = id => setData(p=>({...p,education:p.education.filter(e=>e.id!==id)}));
   const setEdu = (id,f,v) => setData(p=>({...p,education:p.education.map(e=>e.id===id?{...e,[f]:v}:e)}));
 
-  const resumeText = () => `Name: ${data.personal.name}\nTitle: ${data.personal.title}\nSummary: ${data.personal.summary}\nExp: ${data.experience.map(e=>`${e.role} at ${e.company} (${e.duration}): ${e.bullets}`).join(" || ")}\nEdu: ${data.education.map(e=>`${e.degree} ${e.school} ${e.year}`).join(", ")}\nSkills: ${data.skills.technical}, ${data.skills.soft}\nLanguages: ${data.skills.languages}\nCerts: ${data.certifications}`;
+  const resumeText = () => `Name: ${data.personal.name}\nTitle: ${data.personal.title}\nEmail: ${data.personal.email}\nPhone: ${data.personal.phone}\nLocation: ${data.personal.location}\nLinkedIn: ${data.personal.linkedin}\nSummary: ${data.personal.summary}\nExp: ${data.experience.map(e=>`${e.role} at ${e.company} (${e.duration}): ${e.bullets}`).join(" || ")}\nEdu: ${data.education.map(e=>`${e.degree} ${e.school} ${e.year}`).join(", ")}\nSkills: ${data.skills.technical}, ${data.skills.soft}\nLanguages: ${data.skills.languages}\nCerts: ${data.certifications}`;
 
   /* GENERATE AI RESUME */
   const generate = async () => {
     if(!data.personal.name){alert("Please enter your name to continue.");return;}
     setGenerating(true); setAiResume(null); setAts(null); setSuggestions([]);
+
+    // Always preserve these exact fields from the user's form — never let AI blank them out
+    const preserveContacts = (aiData) => ({
+      ...aiData,
+      personal: {
+        ...aiData.personal,
+        email:    data.personal.email    || aiData.personal?.email    || "",
+        phone:    data.personal.phone    || aiData.personal?.phone    || "",
+        location: data.personal.location || aiData.personal?.location || "",
+        linkedin: data.personal.linkedin || aiData.personal?.linkedin || "",
+      }
+    });
+
     try {
       const res = await fetch("/api/analyze", {
         method:"POST", headers:{"Content-Type":"application/json"},
@@ -1212,20 +1225,13 @@ export default function App() {
       });
       const json = await res.json();
       if(json.success && json.data) {
-        setAiResume(json.data); setStep(1);
+        setAiResume(preserveContacts(json.data)); setStep(1);
       } else {
-        // Fallback: call Anthropic directly (client-side)
-        const r2 = await fetch("https://api.anthropic.com/v1/messages",{
-          method:"POST", headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:2400,messages:[{role:"user",content:`You are an expert resume writer. Polish this resume and return ONLY valid JSON, no markdown.\n\nReturn:\n{\n  "personal":{"name":"","title":"","email":"","phone":"","location":"","linkedin":"","summary":"3 powerful ATS-rich sentences with keywords, years of experience, key achievement, measurable outcome"},\n  "experience":[{"id":1,"company":"","role":"","duration":"","bullets":"Strong action verb + specific outcome with metric\\nAnother achievement with quantified impact\\nThird result showing scope or scale\\nFourth bullet showing cross-team or leadership impact"}],\n  "education":[{"id":1,"school":"","degree":"","year":"","gpa":""}],\n  "skills":{"technical":"comma-separated, add 3-5 relevant missing keywords","soft":"comma-separated","languages":"comma-separated"},\n  "certifications":"one per line"\n}\n\nRules: Start bullets with: Led, Architected, Delivered, Grew, Reduced, Built, Launched, Increased, Managed, Designed, Optimized, Spearheaded, Engineered. Add realistic metrics (%, $, team size, time saved). Make summary ATS-optimized for their specific role. Each experience should have 4-5 strong bullets.\n\n${resumeText()}`}]})
-        });
-        const d2 = await r2.json();
-        const parsed = JSON.parse(d2.content?.[0]?.text.replace(/```json|```/g,"").trim()||"{}");
-        setAiResume(parsed); setStep(1);
+        throw new Error("API route failed");
       }
     } catch(e){ 
       console.error("Generate error:", e);
-      setAiResume(data); setStep(1); 
+      setAiResume(preserveContacts(data)); setStep(1); 
     } finally { setGenerating(false); }
   };
 
@@ -1267,9 +1273,16 @@ export default function App() {
       if(s.field==="certifications") setData(p=>({...p,certifications:(p.certifications?p.certifications+"\n":"")+s.autoText}));
       if(aiResume) {
         setAiResume(prev=>{
-          const n={...prev};
-          if(s.field==="summary") n.personal={...n.personal,summary:s.autoText};
-          if(s.field==="skills") n.skills={...n.skills,soft:(n.skills?.soft?n.skills.soft+", ":"")+s.autoText};
+          const n = {...prev, personal: {
+            ...prev.personal,
+            // Always keep original contact fields
+            email:    data.personal.email    || prev.personal?.email    || "",
+            phone:    data.personal.phone    || prev.personal?.phone    || "",
+            location: data.personal.location || prev.personal?.location || "",
+            linkedin: data.personal.linkedin || prev.personal?.linkedin || "",
+          }};
+          if(s.field==="summary") n.personal = {...n.personal, summary:s.autoText};
+          if(s.field==="skills")  n.skills   = {...n.skills, soft:(n.skills?.soft?n.skills.soft+", ":"")+s.autoText};
           return n;
         });
       }
