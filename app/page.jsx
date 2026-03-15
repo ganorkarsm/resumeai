@@ -31,19 +31,19 @@ const FEATURES = [
   { icon: "📊", title: "ATS Score Analysis", desc: "See exactly how your resume scores against the same ATS systems used by TCS, Infosys, Wipro, Amazon, and 90% of top Indian employers." },
   { icon: "🎨", title: "5 Professional Templates", desc: "Modern, Corporate, Simple, Elegant, and Creative — each designed by professionals for different industries and career stages." },
   { icon: "💡", title: "Smart Suggestions", desc: "Get AI-powered suggestions with one-click auto-apply. Add missing keywords, strengthen your summary, and quantify achievements instantly." },
-  { icon: "📄", title: "PDF & Word Download", desc: "Download in both PDF (ATS-friendly) and Word (.docx editable) formats. Both included in your ₹199 one-time payment." },
-  { icon: "🔒", title: "Secure Razorpay Payment", desc: "Pay securely via UPI, cards, netbanking, or wallets. One-time ₹199 payment — no subscription, no hidden charges, ever." },
+  { icon: "📄", title: "PDF & Word Download", desc: "Download in both PDF (ATS-friendly) and Word (.docx editable) formats. Both included in your ₹99 one-time payment." },
+  { icon: "🔒", title: "Secure Razorpay Payment", desc: "Pay securely via UPI, cards, netbanking, or wallets. One-time ₹99 payment — no subscription, no hidden charges, ever." },
 ];
 
 const STEPS = [
   { num: "01", title: "Fill Your Details", desc: "Enter your work experience, education, and skills. Our smart form guides you through every section." },
   { num: "02", title: "AI Generates Preview", desc: "Click one button. AI rewrites your resume with professional language, metrics, and ATS keywords." },
   { num: "03", title: "Check ATS Score", desc: "See your score, get smart suggestions, and apply improvements with one click." },
-  { num: "04", title: "Pay ₹199 & Download", desc: "Pay securely via Razorpay. Download as PDF and Word instantly. Done!" },
+  { num: "04", title: "Pay ₹99 & Download", desc: "Pay securely via Razorpay. Download as PDF and Word instantly. Done!" },
 ];
 
 const FAQS = [
-  { q: "Is ₹199 a one-time payment or subscription?", a: "Completely one-time. You pay ₹199 once and download both PDF and Word formats of your resume. No monthly fees, no hidden charges, no subscriptions — ever." },
+  { q: "Is ₹99 a one-time payment or subscription?", a: "Completely one-time. You pay ₹99 once and download both PDF and Word formats of your resume. No monthly fees, no hidden charges, no subscriptions — ever." },
   { q: "What is an ATS score and why does it matter?", a: "ATS (Applicant Tracking System) is software used by 90%+ of companies to auto-filter resumes before a human even sees them. A low ATS score means your resume gets rejected automatically. Our AI optimizes your resume to pass these filters." },
   { q: "Is this useful for freshers with no experience?", a: "Absolutely! ResumePro is designed for both freshers and experienced professionals. For freshers, it helps highlight projects, internships, and skills effectively. The Simple and Modern templates work great for entry-level positions." },
   { q: "Can I edit the resume after downloading?", a: "Yes! The Word (.docx) file is fully editable in Microsoft Word, Google Docs, or LibreOffice. Make any changes you want after downloading." },
@@ -319,7 +319,7 @@ export default function LandingPage() {
           <span className="gold">Hired</span>
         </h1>
         <p className="hero-sub">
-          AI rewrites your resume with action verbs and metrics. ATS score analysis tells you exactly why recruiters skip your resume — and how to fix it. Download as PDF or Word for just ₹199.
+          AI rewrites your resume with action verbs and metrics. ATS score analysis tells you exactly why recruiters skip your resume — and how to fix it. Download as PDF or Word for just ₹99.
         </p>
         <div className="hero-cta-row">
           <Link href="/builder" className="btn-primary">✨ Build My Resume Free →</Link>
@@ -498,7 +498,7 @@ export default function LandingPage() {
           <div className="pricing-card">
             <div className="pricing-top">
               <div className="pricing-badge">ONE-TIME PAYMENT</div>
-              <div className="pricing-amount"><span>₹</span>199</div>
+              <div className="pricing-amount"><span>₹</span>99</div>
               <div className="pricing-desc">Complete resume package · No subscription ever</div>
             </div>
             <div className="pricing-body">
@@ -558,7 +558,7 @@ export default function LandingPage() {
           <span>✅ No sign-up needed</span>
           <span>🔒 Secure payment</span>
           <span>⚡ Ready in 5 min</span>
-          <span>💰 ₹199 one-time only</span>
+          <span>💰 ₹99 one-time only</span>
         </div>
       </section>
 

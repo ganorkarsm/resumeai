@@ -233,8 +233,8 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#F0F2F5;color:#1a1d23
 .tpl-modern .r-header::after{content:'';position:absolute;right:20px;bottom:-20px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,0.04)}
 .tpl-modern .r-name{font-size:24px;font-weight:800;letter-spacing:-0.5px;margin-bottom:3px}
 .tpl-modern .r-title{font-size:11px;color:rgba(255,255,255,0.7);font-weight:500;margin-bottom:12px}
-.tpl-modern .r-contacts{display:flex;flex-wrap:wrap;gap:12px;font-size:9px;color:rgba(255,255,255,0.65)}
-.tpl-modern .r-contact-item{display:flex;align-items:center;gap:4px}
+.tpl-modern .r-contacts{display:flex;flex-wrap:wrap;gap:14px;font-size:9px;color:rgba(255,255,255,0.75)}
+.tpl-modern .r-contact-item{display:inline-flex;align-items:center}
 .tpl-modern .r-body{display:grid;grid-template-columns:1fr 2.2fr;gap:0}
 .tpl-modern .r-sidebar{background:#f8faff;padding:18px 16px;border-right:1px solid #e8f0fe}
 .tpl-modern .r-main{padding:18px 20px}
@@ -660,31 +660,6 @@ const STEPS = ["Build", "Template", "Score", "Download"];
 /* ══════════════════════════════════════════════════════
    TEMPLATE THUMBNAILS
 ══════════════════════════════════════════════════════ */
-function contactIcon(val) {
-  if (!val) return '📍';
-  const v = val.trim();
-  if (v.includes('@')) return '✉';
-  if (v.toLowerCase().includes('linkedin') || v.toLowerCase().includes('linkedin.com')) return 'in';
-  // Phone: starts with +, or has 7+ digits, or starts with 0 or 9 and has digits
-  const digitsOnly = v.replace(/[^0-9]/g, '');
-  if (digitsOnly.length >= 7 || v.startsWith('+') || /^[\d\s\-().+]{7,}$/.test(v)) return '📱';
-  return '📍';
-}
-
-function ContactIconEl({ val, style = {} }) {
-  const isLinkedIn = val.toLowerCase().includes('linkedin');
-  if (isLinkedIn) {
-    return (
-      <span style={{
-        display:'inline-flex', alignItems:'center', justifyContent:'center',
-        width:13, height:13, background:'#0A66C2', borderRadius:2,
-        color:'#fff', fontSize:8, fontWeight:900, fontFamily:'sans-serif',
-        letterSpacing:0, flexShrink:0, lineHeight:1, ...style
-      }}>in</span>
-    );
-  }
-  return <span style={{marginRight:3,...style}}>{contactIcon(val)}</span>;
-}
 
 function Thumb({ id }) {
   if (id === "modern") return (
@@ -735,19 +710,13 @@ function Thumb({ id }) {
   );
 }
 
+/* ══════════════════════════════════════════════════════
+   RESUME RENDERERS
+══════════════════════════════════════════════════════ */
 function ContactItem({ c }) {
   if (!c) return null;
-  const v = c.trim();
-  const isEmail    = v.includes('@');
-  const isLinkedIn = v.toLowerCase().includes('linkedin');
-  const isPhone    = !isEmail && !isLinkedIn && (v.replace(/[^0-9]/g,'').length >= 7 || v.startsWith('+'));
-
   return (
-    <span className="r-contact-item" style={{display:'inline-flex', alignItems:'center', gap:4}}>
-      {isEmail    && <span style={{fontSize:9}}>✉</span>}
-      {isPhone    && <span style={{fontSize:9}}>📱</span>}
-      {isLinkedIn && <span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',width:11,height:11,background:'#0A66C2',borderRadius:2,color:'#fff',fontSize:7,fontWeight:900,fontFamily:'sans-serif',flexShrink:0,lineHeight:1}}>in</span>}
-      {!isEmail && !isPhone && !isLinkedIn && <span style={{fontSize:9}}>📍</span>}
+    <span className="r-contact-item" style={{display:'inline-flex', alignItems:'center', gap:3}}>
       {c}
     </span>
   );
