@@ -63,7 +63,7 @@ export default function LandingPage() {
     setContactStatus("sending");
     // Send to a simple mailto or formspree endpoint
     try {
-      const res = await fetch("https://formspree.io/f/YOUR_FORMSPREE_ID", {
+      const res = await fetch("https://formspree.io/f/mbdzwaok", {
         method:"POST",
         headers:{"Content-Type":"application/json","Accept":"application/json"},
         body: JSON.stringify({
