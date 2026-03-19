@@ -54,6 +54,30 @@ const FAQS = [
 export default function LandingPage() {
   const [countersStarted, setCountersStarted] = useState(false);
   const [openFaq, setOpenFaq] = useState(null);
+  const [contactForm, setContactForm] = useState({ name:"", email:"", type:"feedback", message:"" });
+  const [contactStatus, setContactStatus] = useState(""); // "" | "sending" | "sent" | "error"
+
+  const handleContact = async (e) => {
+    e.preventDefault();
+    if(!contactForm.name||!contactForm.email||!contactForm.message){ alert("Please fill all fields."); return; }
+    setContactStatus("sending");
+    // Send to a simple mailto or formspree endpoint
+    try {
+      const res = await fetch("https://formspree.io/f/YOUR_FORMSPREE_ID", {
+        method:"POST",
+        headers:{"Content-Type":"application/json","Accept":"application/json"},
+        body: JSON.stringify({
+          name: contactForm.name,
+          email: contactForm.email,
+          type: contactForm.type,
+          message: contactForm.message,
+          _subject: `ResumePro ${contactForm.type}: ${contactForm.name}`
+        })
+      });
+      if(res.ok) { setContactStatus("sent"); setContactForm({name:"",email:"",type:"feedback",message:""}); }
+      else { setContactStatus("error"); }
+    } catch(e) { setContactStatus("error"); }
+  };
   const [activeTestimonial, setActiveTestimonial] = useState(0);
 
   const resumesCount  = useCounter(12847, 2000, countersStarted);
@@ -547,6 +571,92 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* CONTACT US */}
+      <section className="section" id="contact" style={{background:"#f8faff"}}>
+        <div className="section-inner" style={{maxWidth:680}}>
+          <div style={{textAlign:"center",marginBottom:40}}>
+            <div className="section-tag" style={{justifyContent:"center"}}>GET IN TOUCH</div>
+            <h2 className="section-title" style={{textAlign:"center"}}>We'd Love Your <em>Feedback</em></h2>
+            <p style={{color:"#64748b",fontSize:15,lineHeight:1.7,marginTop:12}}>
+              Found a bug? Have a suggestion? Want a new feature? We read every message personally.
+            </p>
+          </div>
+
+          <div style={{background:"#fff",borderRadius:16,padding:"36px 40px",boxShadow:"0 4px 24px rgba(0,0,0,0.07)",border:"1px solid #e2e8f0"}}>
+            {contactStatus==="sent" ? (
+              <div style={{textAlign:"center",padding:"40px 0"}}>
+                <div style={{fontSize:52,marginBottom:16}}>🎉</div>
+                <h3 style={{fontSize:22,fontWeight:800,color:"#1a1d23",marginBottom:8}}>Message Received!</h3>
+                <p style={{color:"#64748b",fontSize:15,lineHeight:1.6}}>Thank you for reaching out. We'll get back to you within 24 hours.</p>
+                <button onClick={()=>setContactStatus("")} style={{marginTop:20,background:"#eff6ff",border:"none",color:"#2563EB",fontWeight:700,fontSize:13,padding:"10px 24px",borderRadius:8,cursor:"pointer"}}>Send Another Message</button>
+              </div>
+            ) : (
+              <form onSubmit={handleContact} style={{display:"flex",flexDirection:"column",gap:18}}>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+                  <div style={{display:"flex",flexDirection:"column",gap:6}}>
+                    <label style={{fontSize:11,fontWeight:700,color:"#94a3b8",letterSpacing:1,textTransform:"uppercase"}}>Your Name *</label>
+                    <input value={contactForm.name} onChange={e=>setContactForm(p=>({...p,name:e.target.value}))}
+                      placeholder="Rahul Sharma" required
+                      style={{padding:"11px 14px",border:"1.5px solid #e2e8f0",borderRadius:8,fontSize:14,fontFamily:"inherit",outline:"none",transition:"border 0.15s"}}
+                      onFocus={e=>e.target.style.borderColor="#2563EB"} onBlur={e=>e.target.style.borderColor="#e2e8f0"}/>
+                  </div>
+                  <div style={{display:"flex",flexDirection:"column",gap:6}}>
+                    <label style={{fontSize:11,fontWeight:700,color:"#94a3b8",letterSpacing:1,textTransform:"uppercase"}}>Email Address *</label>
+                    <input type="email" value={contactForm.email} onChange={e=>setContactForm(p=>({...p,email:e.target.value}))}
+                      placeholder="rahul@email.com" required
+                      style={{padding:"11px 14px",border:"1.5px solid #e2e8f0",borderRadius:8,fontSize:14,fontFamily:"inherit",outline:"none",transition:"border 0.15s"}}
+                      onFocus={e=>e.target.style.borderColor="#2563EB"} onBlur={e=>e.target.style.borderColor="#e2e8f0"}/>
+                  </div>
+                </div>
+
+                <div style={{display:"flex",flexDirection:"column",gap:6}}>
+                  <label style={{fontSize:11,fontWeight:700,color:"#94a3b8",letterSpacing:1,textTransform:"uppercase"}}>Type of Message</label>
+                  <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                    {[{val:"feedback",label:"💡 Feedback"},
+                      {val:"bug",label:"🐛 Bug Report"},
+                      {val:"feature",label:"✨ Feature Request"},
+                      {val:"other",label:"💬 Other"}].map(opt=>(
+                      <button key={opt.val} type="button"
+                        onClick={()=>setContactForm(p=>({...p,type:opt.val}))}
+                        style={{padding:"7px 16px",borderRadius:20,fontSize:13,fontWeight:600,fontFamily:"inherit",cursor:"pointer",transition:"all 0.15s",
+                          background:contactForm.type===opt.val?"#2563EB":"#f1f5f9",
+                          color:contactForm.type===opt.val?"#fff":"#64748b",
+                          border:contactForm.type===opt.val?"2px solid #2563EB":"2px solid transparent"}}>
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div style={{display:"flex",flexDirection:"column",gap:6}}>
+                  <label style={{fontSize:11,fontWeight:700,color:"#94a3b8",letterSpacing:1,textTransform:"uppercase"}}>Message *</label>
+                  <textarea value={contactForm.message} onChange={e=>setContactForm(p=>({...p,message:e.target.value}))}
+                    placeholder="Tell us what you think, what's broken, or what you'd love to see next..."
+                    required rows={4}
+                    style={{padding:"11px 14px",border:"1.5px solid #e2e8f0",borderRadius:8,fontSize:14,fontFamily:"inherit",outline:"none",resize:"vertical",lineHeight:1.6,transition:"border 0.15s"}}
+                    onFocus={e=>e.target.style.borderColor="#2563EB"} onBlur={e=>e.target.style.borderColor="#e2e8f0"}/>
+                </div>
+
+                <button type="submit" disabled={contactStatus==="sending"}
+                  style={{background:"linear-gradient(135deg,#2563EB,#7C3AED)",color:"#fff",border:"none",borderRadius:10,padding:"14px 28px",fontSize:15,fontWeight:700,fontFamily:"inherit",cursor:"pointer",transition:"all 0.2s",opacity:contactStatus==="sending"?0.7:1}}>
+                  {contactStatus==="sending" ? "⏳ Sending..." : "📨 Send Message"}
+                </button>
+
+                {contactStatus==="error" && (
+                  <p style={{color:"#dc2626",fontSize:13,textAlign:"center"}}>
+                    Something went wrong. Please email us directly at <strong>support@resumepro.in</strong>
+                  </p>
+                )}
+              </form>
+            )}
+          </div>
+
+          <div style={{textAlign:"center",marginTop:20,color:"#94a3b8",fontSize:13}}>
+            Or email us directly at <a href="mailto:support@resumepro.in" style={{color:"#2563EB",fontWeight:600}}>support@resumepro.in</a>
+          </div>
+        </div>
+      </section>
+
       {/* CTA BANNER */}
       <section className="cta-banner">
         <h2>Your Dream Job Is<br /><em>One Resume Away</em></h2>
@@ -573,6 +683,7 @@ export default function LandingPage() {
           <a href="#features" className="footer-link">Features</a>
           <a href="#pricing" className="footer-link">Pricing</a>
           <a href="#faq" className="footer-link">FAQ</a>
+          <a href="#contact" className="footer-link">Contact</a>
         </div>
         <div className="footer-copy">© 2025 ResumePro · Made with ❤️ in India</div>
       </footer>
