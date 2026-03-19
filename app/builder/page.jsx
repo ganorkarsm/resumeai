@@ -930,68 +930,306 @@ function ResumeContent({ data, tpl }) {
 }
 
 /* ══════════════════════════════════════════════════════
-   PDF GENERATOR
+   PDF GENERATOR — matches preview exactly
 ══════════════════════════════════════════════════════ */
 function genPDF(d, tpl) {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ unit:"mm", format:"a4" });
   const W=210, m=18;
-  const colors = {
-    modern: { hdr:[30,58,138], acc:[37,99,235], text:[26,29,35] },
-    corp:   { hdr:[30,58,95],  acc:[30,58,95],  text:[26,29,35] },
-    simple: { hdr:[45,55,72],  acc:[45,55,72],  text:[45,55,72] },
-    elegant:{ hdr:[26,26,46],  acc:[183,134,13],text:[44,44,44] },
-    creative:{hdr:[124,58,237],acc:[124,58,237],text:[26,26,46] }
-  };
-  const C = colors[tpl]||colors.modern;
-  let y=0;
 
-  // Header
-  doc.setFillColor(...C.hdr); doc.rect(0,0,W,38,"F");
-  if(tpl==="elegant"){doc.setFillColor(183,134,13);doc.rect(0,38,W,1.5,"F");}
-  doc.setTextColor(255,255,255); doc.setFont("helvetica","bold"); doc.setFontSize(20);
-  doc.text(d.personal.name||"Your Name", tpl==="elegant"?W/2:m, 14, tpl==="elegant"?{align:"center"}:{});
-  if(d.personal.title){doc.setFont("helvetica","italic");doc.setFontSize(10);doc.setTextColor(200,200,200);doc.text(d.personal.title, tpl==="elegant"?W/2:m, 22, tpl==="elegant"?{align:"center"}:{});}
+  const colors = {
+    modern:  { hdr:[30,58,138],  acc:[37,99,235],   text:[26,29,35]   },
+    corp:    { hdr:[30,58,95],   acc:[30,58,95],    text:[26,29,35]   },
+    simple:  { hdr:[45,55,72],   acc:[45,55,72],    text:[45,55,72]   },
+    elegant: { hdr:[26,26,46],   acc:[183,134,13],  text:[44,44,44]   },
+    creative:{ hdr:[124,58,237], acc:[124,58,237],  text:[26,26,46]   },
+    teal:    { hdr:[15,118,110], acc:[20,184,166],  text:[19,78,74]   },
+    dark:    { hdr:[15,23,42],   acc:[59,130,246],  text:[226,232,240]},
+    orange:  { hdr:[234,88,12],  acc:[234,88,12],   text:[26,26,26]   },
+    minimal: { hdr:[17,17,17],   acc:[17,17,17],    text:[17,17,17]   },
+    rose:    { hdr:[190,24,93],  acc:[225,29,72],   text:[26,26,46]   },
+  };
+  const C = colors[tpl] || colors.modern;
+
   const p = d.personal || {};
+  const tech  = d.skills?.technical?.split(",").map(s=>s.trim()).filter(Boolean)||[];
+  const soft  = d.skills?.soft?.split(",").map(s=>s.trim()).filter(Boolean)||[];
+  const langs = d.skills?.languages?.split(",").map(s=>s.trim()).filter(Boolean)||[];
+  const certs = d.certifications?.split("\n").filter(Boolean)||[];
+  const exps  = d.experience?.filter(e=>e.company||e.role)||[];
+  const edus  = d.education?.filter(e=>e.school||e.degree)||[];
+
+  // ── helpers ──
+  const secTitle = (t, x, yy, w, color) => {
+    const cc = color || C.acc;
+    doc.setTextColor(...cc);
+    doc.setFont("helvetica","bold");
+    doc.setFontSize(7.5);
+    doc.text(t.toUpperCase(), x, yy);
+    doc.setDrawColor(...cc);
+    doc.setLineWidth(0.5);
+    doc.line(x, yy+1.8, x+w, yy+1.8);
+    return yy+7;
+  };
+
+  const bodyText = (txt, x, yy, maxW, size=8.5, color=[60,70,90]) => {
+    doc.setFont("helvetica","normal");
+    doc.setFontSize(size);
+    doc.setTextColor(...color);
+    const lines = doc.splitTextToSize(txt, maxW);
+    doc.text(lines, x, yy);
+    return yy + lines.length * (size*0.38) + 1;
+  };
+
+  const drawBullet = (txt, x, yy, maxW, accColor) => {
+    // bullet dot
+    doc.setFillColor(...(accColor||C.acc));
+    doc.circle(x+1, yy-1, 0.8, "F");
+    doc.setFont("helvetica","normal");
+    doc.setFontSize(8.5);
+    doc.setTextColor(60,70,90);
+    const lines = doc.splitTextToSize(txt.replace(/^[•\-*▸◆]\s*/,""), maxW-5);
+    doc.text(lines, x+4, yy);
+    return yy + lines.length*3.6 + 1.5;
+  };
+
+  const skillBar = (label, x, yy, barW, pct, accentColor) => {
+    doc.setFont("helvetica","normal");
+    doc.setFontSize(8);
+    doc.setTextColor(60,70,90);
+    doc.text(label, x, yy);
+    // track
+    doc.setFillColor(225,230,240);
+    doc.roundedRect(x+barW-18, yy-2.5, 18, 2.5, 0.5,0.5,"F");
+    // fill
+    doc.setFillColor(...(accentColor||C.acc));
+    const pcts = [70,85,75,90,80,65,95];
+    const fillW = 18 * (pcts[Math.floor(Math.random()*7)] / 100);
+    doc.roundedRect(x+barW-18, yy-2.5, fillW, 2.5, 0.5,0.5,"F");
+    return yy + 5;
+  };
+
+  // ── HEADER ──
+  const hdrH = 36;
+  doc.setFillColor(...C.hdr);
+  doc.rect(0, 0, W, hdrH, "F");
+
+  // Name
+  doc.setTextColor(255,255,255);
+  doc.setFont("helvetica","bold");
+  doc.setFontSize(20);
+  const nameX = tpl==="elegant" ? W/2 : m;
+  const nameAlign = tpl==="elegant" ? {align:"center"} : {};
+  doc.text(p.name||"Your Name", nameX, 13, nameAlign);
+
+  // Title — NORMAL not italic
+  if(p.title) {
+    doc.setFont("helvetica","normal");
+    doc.setFontSize(9.5);
+    doc.setTextColor(200,210,230);
+    doc.text(p.title, nameX, 21, nameAlign);
+  }
+
+  // Contacts with labels
   const contactParts = [
     p.email    && `Email: ${p.email}`,
     p.phone    && `Mobile: ${p.phone}`,
     p.location && `Location: ${p.location}`,
     p.linkedin && `LinkedIn: ${p.linkedin}`,
   ].filter(Boolean);
-  doc.setFont("helvetica","normal");doc.setFontSize(8);doc.setTextColor(180,190,200);
-  doc.text(contactParts.join("   |   "),tpl==="elegant"?W/2:m,30,tpl==="elegant"?{align:"center"}:{});
-  y=46;
-
-  const secTitle=(t,x,yy,w)=>{
-    doc.setFillColor(245,247,250);doc.rect(x,yy-3.5,w,6,"F");
-    doc.setTextColor(...C.acc);doc.setFont("helvetica","bold");doc.setFontSize(7);
-    doc.text(t.toUpperCase(),x+1,yy);
-    doc.setDrawColor(...C.acc);doc.setLineWidth(0.4);doc.line(x,yy+1.5,x+w,yy+1.5);
-    return yy+8;
-  };
-
-  // Two-column for modern/elegant/creative
-  if(["modern","elegant","creative"].includes(tpl)){
-    const sW=58,sX=m,mX=m+sW+6,mW=W-mX-m;
-    let sY=y,mY=y;
-    // Sidebar
-    if(d.personal.summary){sY=secTitle("Profile",sX,sY,sW);doc.setFont("helvetica","italic");doc.setFontSize(8.5);doc.setTextColor(80,90,100);const ls=doc.splitTextToSize(d.personal.summary,sW-2);doc.text(ls,sX,sY);sY+=ls.length*4+6;}
-    const tech=d.skills?.technical?.split(",").map(s=>s.trim()).filter(Boolean)||[];
-    const soft=d.skills?.soft?.split(",").map(s=>s.trim()).filter(Boolean)||[];
-    if(tech.length||soft.length){sY=secTitle("Skills",sX,sY,sW);[...tech,...soft].forEach(s=>{doc.setFont("helvetica","normal");doc.setFontSize(8);doc.setTextColor(70,80,100);const sw=doc.getTextWidth(s)+4;doc.setFillColor(238,243,255);doc.roundedRect(sX,sY-2,Math.min(sw,sW-2),4.5,.5,.5,"F");doc.text(s.substring(0,15),sX+2,sY+1.5);sY+=5.5;});sY+=3;}
-    d.education?.filter(e=>e.school||e.degree).forEach((e,i)=>{if(i===0)sY=secTitle("Education",sX,sY,sW);doc.setFont("helvetica","bold");doc.setFontSize(9);doc.setTextColor(...C.text);doc.text(e.degree?.substring(0,18)||"",sX,sY);sY+=3.5;doc.setFont("helvetica","italic");doc.setFontSize(8);doc.setTextColor(100,110,130);doc.text(e.school?.substring(0,18)||"",sX,sY);sY+=3.5;if(e.year){doc.setFont("helvetica","normal");doc.setFontSize(7.5);doc.setTextColor(140,150,170);doc.text(e.year,sX,sY);sY+=3.5;}sY+=2;});
-    // Main
-    d.experience?.filter(e=>e.company||e.role).forEach((e,i)=>{if(i===0)mY=secTitle("Experience",mX,mY,mW);doc.setFont("helvetica","bold");doc.setFontSize(10.5);doc.setTextColor(...C.text);doc.text(e.role||"",mX,mY);if(e.duration){doc.setFont("helvetica","normal");doc.setFontSize(8);doc.setTextColor(...C.acc);doc.text(e.duration,W-m-doc.getTextWidth(e.duration),mY);}mY+=3.5;doc.setFont("helvetica","italic");doc.setFontSize(8.5);doc.setTextColor(100,110,130);doc.text(e.company||"",mX,mY);mY+=4.5;(e.bullets?.split("\n").filter(b=>b.trim())||[]).forEach(b=>{doc.setFillColor(...C.acc);doc.rect(mX,mY-1.2,1.2,1.2,"F");doc.setFont("helvetica","normal");doc.setFontSize(8.5);doc.setTextColor(70,80,100);const ls=doc.splitTextToSize(b.replace(/^[•\-*]\s*/,""),mW-6);doc.text(ls,mX+4,mY);mY+=ls.length*3.8+1;});mY+=4;});
-  } else {
-    // Single column (corp, simple)
-    if(d.personal.summary){y=secTitle("Summary",m,y,W-2*m);doc.setFont("helvetica","italic");doc.setFontSize(9);doc.setTextColor(70,80,100);const ls=doc.splitTextToSize(d.personal.summary,W-2*m-2);doc.text(ls,m,y);y+=ls.length*4+8;}
-    d.experience?.filter(e=>e.company||e.role).forEach((e,i)=>{if(i===0)y=secTitle("Experience",m,y,W-2*m);doc.setFont("helvetica","bold");doc.setFontSize(11);doc.setTextColor(...C.text);doc.text(e.role||"",m,y);if(e.duration){doc.setFont("helvetica","normal");doc.setFontSize(8.5);doc.setTextColor(...C.acc);doc.text(e.duration,W-m-doc.getTextWidth(e.duration),y);}y+=3.5;doc.setFont("helvetica","italic");doc.setFontSize(9);doc.setTextColor(100,110,130);doc.text(e.company||"",m,y);y+=4.5;(e.bullets?.split("\n").filter(b=>b.trim())||[]).forEach(b=>{doc.setFillColor(...C.acc);doc.circle(m+1,y-0.8,1,"F");doc.setFont("helvetica","normal");doc.setFontSize(9);doc.setTextColor(70,80,100);const ls=doc.splitTextToSize(b.replace(/^[•\-*]\s*/,""),W-2*m-8);doc.text(ls,m+5,y);y+=ls.length*4+1;});y+=5;});
-    const tech=d.skills?.technical?.split(",").map(s=>s.trim()).filter(Boolean)||[];
-    if(tech.length){y=secTitle("Skills",m,y,W-2*m);tech.forEach(s=>{doc.setFont("helvetica","normal");doc.setFontSize(8.5);doc.setTextColor(70,80,100);const sw=doc.getTextWidth(s)+5;doc.setFillColor(240,244,255);doc.roundedRect(m,y-2,sw,5,0.5,0.5,"F");doc.text(s,m+2.5,y+1.8);y+=0; });doc.text("",m,y);y+=8;}
-    d.education?.filter(e=>e.school||e.degree).forEach((e,i)=>{if(i===0)y=secTitle("Education",m,y,W-2*m);doc.setFont("helvetica","bold");doc.setFontSize(10);doc.setTextColor(...C.text);doc.text(e.degree||"",m,y);y+=3.5;doc.setFont("helvetica","italic");doc.setFontSize(9);doc.setTextColor(100,110,130);doc.text(e.school||"",m,y);y+=3.5;if(e.year){doc.setFontSize(8);doc.setTextColor(140,150,170);doc.text([e.year,e.gpa&&`GPA: ${e.gpa}`].filter(Boolean).join(" · "),m,y);y+=3.5;}y+=3;});
+  if(contactParts.length) {
+    doc.setFont("helvetica","normal");
+    doc.setFontSize(7.5);
+    doc.setTextColor(180,195,215);
+    doc.text(contactParts.join("   |   "), nameX, 29, nameAlign);
   }
-  doc.save(`${d.personal.name||"resume"}_Resume.pdf`);
+
+  let y = hdrH + 8;
+
+  // ── TWO-COLUMN layout (modern, elegant, creative, teal, dark, rose) ──
+  const twoCol = ["modern","elegant","creative","teal","dark","rose"].includes(tpl);
+  const oneCol = !twoCol;
+
+  if(twoCol) {
+    const sW=55, sX=m, mX=m+sW+7, mW=W-mX-m;
+    let sY=y, mY=y;
+
+    // SIDEBAR
+
+    // About / Summary — NORMAL font, not italic
+    if(p.summary) {
+      sY = secTitle("About", sX, sY, sW);
+      doc.setFont("helvetica","normal");
+      doc.setFontSize(8);
+      doc.setTextColor(60,75,95);
+      const ls = doc.splitTextToSize(p.summary, sW-1);
+      doc.text(ls, sX, sY);
+      sY += ls.length*3.4 + 5;
+    }
+
+    // Skills — with bars matching preview
+    if(tech.length || soft.length) {
+      sY = secTitle("Skills", sX, sY, sW);
+      const barWidths = [70,85,75,90,80,65,95,72,88,68];
+      tech.forEach((s,i) => {
+        doc.setFont("helvetica","normal");
+        doc.setFontSize(8);
+        doc.setTextColor(55,65,85);
+        doc.text(s, sX, sY);
+        // track bar
+        doc.setFillColor(220,228,242);
+        doc.roundedRect(sX+sW-19, sY-2.8, 19, 3, 0.5,0.5,"F");
+        // fill bar
+        doc.setFillColor(...C.acc);
+        doc.roundedRect(sX+sW-19, sY-2.8, 19*(barWidths[i%10]/100), 3, 0.5,0.5,"F");
+        sY += 5;
+      });
+      // soft skills as small tags
+      if(soft.length) {
+        sY += 2;
+        soft.forEach(s => {
+          doc.setFillColor(235,242,255);
+          doc.setFontSize(7.5);
+          const sw = doc.getTextWidth(s)+4;
+          doc.roundedRect(sX, sY-2.2, Math.min(sw, sW-1), 4, 0.5,0.5,"F");
+          doc.setTextColor(...C.acc);
+          doc.text(s, sX+2, sY+0.8);
+          sY += 5;
+        });
+      }
+      sY += 3;
+    }
+
+    // Languages
+    if(langs.length) {
+      sY = secTitle("Languages", sX, sY, sW);
+      langs.forEach(l => {
+        doc.setFillColor(235,242,255);
+        const lw = doc.getTextWidth(l)+4;
+        doc.roundedRect(sX, sY-2.2, Math.min(lw,sW-1), 4, 0.5,0.5,"F");
+        doc.setFont("helvetica","normal"); doc.setFontSize(7.5); doc.setTextColor(...C.acc);
+        doc.text(l, sX+2, sY+0.8);
+        sY += 5;
+      });
+      sY += 2;
+    }
+
+    // Education
+    if(edus.length) {
+      sY = secTitle("Education", sX, sY, sW);
+      edus.forEach(e => {
+        doc.setFont("helvetica","bold"); doc.setFontSize(8.5); doc.setTextColor(...C.text);
+        doc.text(e.degree||"", sX, sY); sY+=3.5;
+        doc.setFont("helvetica","normal"); doc.setFontSize(7.5); doc.setTextColor(100,115,135);
+        doc.text(e.school||"", sX, sY); sY+=3;
+        if(e.year){ doc.setFontSize(7); doc.setTextColor(140,155,170); doc.text(e.year, sX, sY); sY+=3; }
+        sY+=2;
+      });
+    }
+
+    // Certifications
+    if(certs.length) {
+      sY = secTitle("Certifications", sX, sY, sW);
+      certs.forEach(c => {
+        doc.setFont("helvetica","normal"); doc.setFontSize(7.5); doc.setTextColor(60,75,95);
+        const ls = doc.splitTextToSize("✓ "+c, sW-1);
+        doc.text(ls, sX, sY); sY += ls.length*3.4+2;
+      });
+    }
+
+    // MAIN COLUMN — Experience
+    if(exps.length) {
+      mY = secTitle("Experience", mX, mY, mW);
+      exps.forEach(e => {
+        // Role + duration on same line
+        doc.setFont("helvetica","bold"); doc.setFontSize(10); doc.setTextColor(...C.text);
+        doc.text(e.role||"", mX, mY);
+        if(e.duration) {
+          doc.setFont("helvetica","normal"); doc.setFontSize(7.5); doc.setTextColor(...C.acc);
+          doc.text(e.duration, W-m-doc.getTextWidth(e.duration), mY);
+        }
+        mY += 3.5;
+        // Company — normal not italic
+        doc.setFont("helvetica","normal"); doc.setFontSize(8); doc.setTextColor(90,105,125);
+        doc.text(e.company||"", mX, mY); mY+=4;
+        // Bullets
+        const bullets = parseBulletsForWord(e.bullets);
+        bullets.forEach(b => { mY = drawBullet(b, mX, mY, mW); });
+        mY += 4;
+      });
+    }
+
+  } else {
+    // ── SINGLE COLUMN (corp, simple, orange, minimal) ──
+
+    // Summary — NORMAL font
+    if(p.summary) {
+      y = secTitle("Professional Summary", m, y, W-2*m);
+      doc.setFont("helvetica","normal"); doc.setFontSize(9); doc.setTextColor(60,75,95);
+      const ls = doc.splitTextToSize(p.summary, W-2*m-2);
+      doc.text(ls, m, y); y += ls.length*3.8+7;
+    }
+
+    // Experience
+    if(exps.length) {
+      y = secTitle("Work Experience", m, y, W-2*m);
+      exps.forEach(e => {
+        doc.setFont("helvetica","bold"); doc.setFontSize(10.5); doc.setTextColor(...C.text);
+        doc.text(e.role||"", m, y);
+        if(e.duration){ doc.setFont("helvetica","normal"); doc.setFontSize(8); doc.setTextColor(...C.acc); doc.text(e.duration, W-m-doc.getTextWidth(e.duration), y); }
+        y+=3.5;
+        doc.setFont("helvetica","normal"); doc.setFontSize(8.5); doc.setTextColor(90,105,125);
+        doc.text(e.company||"", m, y); y+=4;
+        const bullets = parseBulletsForWord(e.bullets);
+        bullets.forEach(b => { y = drawBullet(b, m, y, W-2*m); });
+        y+=4;
+      });
+    }
+
+    // Skills — with bars
+    if(tech.length||soft.length) {
+      y = secTitle("Skills", m, y, W-2*m);
+      const barWidths=[70,85,75,90,80,65,95,72,88,68];
+      const colW = (W-2*m-8)/2;
+      tech.forEach((s,i) => {
+        const cx = m + (i%2)*(colW+8);
+        const cy = y + Math.floor(i/2)*6;
+        doc.setFont("helvetica","normal"); doc.setFontSize(8); doc.setTextColor(55,65,85);
+        doc.text(s, cx, cy);
+        doc.setFillColor(220,228,242); doc.roundedRect(cx+colW-19, cy-2.8, 19, 3, 0.5,0.5,"F");
+        doc.setFillColor(...C.acc); doc.roundedRect(cx+colW-19, cy-2.8, 19*(barWidths[i%10]/100), 3, 0.5,0.5,"F");
+      });
+      y += Math.ceil(tech.length/2)*6+4;
+      soft.forEach(s => {
+        doc.setFillColor(235,242,255); doc.setFontSize(8);
+        const sw=doc.getTextWidth(s)+5;
+        doc.roundedRect(m, y-2.5, sw, 4.5, 0.5,0.5,"F");
+        doc.setTextColor(...C.acc); doc.text(s, m+2.5, y+1); y+=0;
+      });
+      y+=8;
+    }
+
+    // Education
+    if(edus.length) {
+      y = secTitle("Education", m, y, W-2*m);
+      edus.forEach(e => {
+        doc.setFont("helvetica","bold"); doc.setFontSize(10); doc.setTextColor(...C.text);
+        doc.text(e.degree||"", m, y); y+=3.5;
+        doc.setFont("helvetica","normal"); doc.setFontSize(8.5); doc.setTextColor(90,105,125);
+        doc.text(e.school||"", m, y); y+=3;
+        if(e.year){ doc.setFontSize(8); doc.setTextColor(140,155,170); doc.text([e.year, e.gpa&&`GPA: ${e.gpa}`].filter(Boolean).join(" · "), m, y); y+=3.5; }
+        y+=3;
+      });
+    }
+
+    // Certs
+    if(certs.length) {
+      y = secTitle("Certifications", m, y, W-2*m);
+      certs.forEach(c => { y = drawBullet(c, m, y, W-2*m); });
+    }
+  }
+
+  doc.save(`${p.name||"resume"}_Resume.pdf`);
 }
 
 /* ══════════════════════════════════════════════════════
