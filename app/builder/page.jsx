@@ -287,7 +287,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#F0F2F5;color:#1a1d23
 .tpl-simple{background:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:10px;color:#2d3748;padding:24px 28px}
 .tpl-simple .r-name{font-size:26px;font-weight:800;color:#2d3748;letter-spacing:-0.5px;margin-bottom:2px}
 .tpl-simple .r-title{font-size:12px;color:#718096;font-weight:500;margin-bottom:10px}
-.tpl-simple .r-contacts{display:flex;flex-wrap:wrap;gap:14px;font-size:9px;color:#718096;margin-bottom:18px;padding-bottom:14px;border-bottom:1.5px solid #e2e8f0}
+.tpl-simple .r-contacts{display:flex;flex-wrap:wrap;gap:14px;font-size:9px;color:#718096;margin-bottom:18px;padding-bottom:14px;border-bottom:1.5px solid #e2e8f0;width:100%}
 .tpl-simple .r-sec-title{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#4a5568;margin-bottom:8px;margin-top:16px}
 .tpl-simple .r-summary{font-size:10px;line-height:1.75;color:#4a5568}
 .tpl-simple .r-exp-top{display:flex;justify-content:space-between}
@@ -583,7 +583,7 @@ const NEW_TEMPLATE_CSS = `
 .tpl-minimal{background:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:10px;color:#111;padding:28px 30px}
 .tpl-minimal .r-name{font-size:26px;font-weight:900;letter-spacing:-1.5px;color:#111;margin-bottom:3px}
 .tpl-minimal .r-title{font-size:11px;color:#666;font-weight:400;margin-bottom:8px}
-.tpl-minimal .r-contacts{display:flex;flex-wrap:wrap;gap:16px;font-size:9px;color:#666;margin-bottom:18px;padding-bottom:12px;border-bottom:2px solid #111}
+.tpl-minimal .r-contacts{display:flex;flex-wrap:wrap;gap:16px;font-size:9px;color:#666;margin-bottom:18px;padding-bottom:12px;border-bottom:2px solid #111;width:100%}
 .tpl-minimal .r-contact-item{display:flex;align-items:center;gap:4px}
 .tpl-minimal .r-sec-title{font-size:8.5px;font-weight:900;letter-spacing:3px;text-transform:uppercase;color:#111;margin-bottom:7px;margin-top:16px}
 .tpl-minimal .r-summary{font-size:9.5px;line-height:1.8;color:#444}
@@ -798,9 +798,9 @@ function ResumeContent({ data, tpl }) {
 
   // Shared contacts renderer used by all templates
   const Contacts = ({ className }) => (
-    <div className={className||"r-contacts"}>
+    <>
       {contacts.map((ct,i)=><ContactItem key={i} type={ct.type} c={ct.val}/>)}
-    </div>
+    </>
   );
 
   if (tpl === "modern") return (
@@ -946,7 +946,7 @@ function ResumeContent({ data, tpl }) {
       {exps.map((e,i)=><div key={i} className="r-exp-item">
         <div className="r-exp-top"><span className="r-exp-role">{e.role}</span>{e.duration&&<span className="r-exp-dur">{e.duration}</span>}</div>
         <div className="r-exp-co">{e.company}</div>
-        <Bullets bullets={e.bullets} dotEl={<span className="r-dot">◆</span>}/>
+        <Bullets bullets={e.bullets} dotEl={<span className="r-dot"/>}/>
       </div>)}
     </div>
   ):null;
