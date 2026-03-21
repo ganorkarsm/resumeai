@@ -1615,7 +1615,7 @@ export default function App() {
 
       // Step 2: Open Razorpay checkout
       const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "",
+        key: order.key_id, // returned from backend — never expose secret on frontend
         amount: order.amount,
         currency: order.currency,
         name: "ResumePro",

@@ -36,6 +36,7 @@ export async function POST(req) {
 
     return NextResponse.json({
       success:   true,
+      key_id:    process.env.RAZORPAY_KEY_ID, // safe — this is the public key
       order_id:  order.id,
       amount:    order.amount,
       currency:  order.currency,
