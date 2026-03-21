@@ -83,7 +83,7 @@ export default function LandingPage() {
   const resumesCount  = useCounter(12847, 2000, countersStarted);
   const atsImprovement = useCounter(43,   1800, countersStarted);
   const successRate   = useCounter(94,    1600, countersStarted);
-  const templatesCount = useCounter(5,    1000, countersStarted);
+  const templatesCount = useCounter(10,   1000, countersStarted);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
