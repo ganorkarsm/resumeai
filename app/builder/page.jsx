@@ -1422,6 +1422,7 @@ export default function App() {
   const [fmt, setFmt]             = useState("pdf");
   const [card, setCard]           = useState({ num:"", exp:"", cvv:"", name:"" });
   const [dlLoading, setDlLoading] = useState(null);
+  const [payLoading, setPayLoading] = useState(false);
   const [showUpload, setShowUpload] = useState(false);
   const [uploading, setUploading]  = useState(false);
   const uploadRef = useRef(null);
@@ -1528,10 +1529,93 @@ export default function App() {
   };
 
   /* PAY */
-  const handlePay = (e) => {
-    e.preventDefault();
-    if(!card.num||!card.exp||!card.cvv){alert("Please fill all card details.");return;}
-    setShowDlModal(false); setShowSuccess(true); setPaid(true);
+  /* PAY — Real Razorpay */
+  const handlePay = async () => {
+    setPayLoading(true);
+    try {
+      // Step 1: Create order on backend
+      const orderRes = await fetch("/api/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: 9900, // ₹99 in paise
+          notes: { template: tpl, user: data.personal.name || "anonymous" }
+        })
+      });
+      const order = await orderRes.json();
+      if(!order.success) throw new Error(order.error || "Could not create order");
+
+      // Step 2: Open Razorpay checkout
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "",
+        amount: order.amount,
+        currency: order.currency,
+        name: "ResumePro",
+        description: "AI Resume Download — PDF + Word",
+        order_id: order.order_id,
+        prefill: {
+          name:  data.personal.name  || "",
+          email: data.personal.email || "",
+          contact: data.personal.phone || "",
+        },
+        theme: { color: "#2563EB" },
+        handler: async (response) => {
+          // Step 3: Verify payment on backend
+          try {
+            const verifyRes = await fetch("/api/verify-payment", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                razorpay_order_id:   response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature:  response.razorpay_signature,
+              })
+            });
+            const verify = await verifyRes.json();
+            if(verify.verified) {
+              // Payment genuine — unlock download
+              setShowDlModal(false);
+              setShowSuccess(true);
+              setPaid(true);
+              // Notify owner
+              fetch("/api/notify", {
+                method:"POST", headers:{"Content-Type":"application/json"},
+                body: JSON.stringify({
+                  type: "payment",
+                  name: data.personal.name || "Unknown",
+                  email: data.personal.email || "—",
+                  amount: 99,
+                  paymentId: response.razorpay_payment_id,
+                  timestamp: Date.now()
+                })
+              }).catch(()=>{});
+            } else {
+              alert("Payment verification failed. Please contact support.");
+            }
+          } catch(err) {
+            alert("Payment verification error: " + err.message);
+          }
+        },
+        modal: {
+          ondismiss: () => { setPayLoading(false); }
+        }
+      };
+
+      if(!window.Razorpay) {
+        throw new Error("Razorpay not loaded. Please refresh and try again.");
+      }
+      const rzp = new window.Razorpay(options);
+      rzp.on("payment.failed", (resp) => {
+        alert("Payment failed: " + (resp.error?.description || "Unknown error"));
+        setPayLoading(false);
+      });
+      rzp.open();
+    } catch(err) {
+      console.error("Payment error:", err);
+      alert("Payment error: " + err.message);
+    } finally {
+      setPayLoading(false);
+    }
   };
 
   /* DOWNLOAD */
@@ -1574,6 +1658,14 @@ export default function App() {
         }
         await genWord(d);
       }
+      // Notify owner — fire and forget, never blocks user
+      fetch("/api/notify", {
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({
+          type:"download", name:d.personal?.name||"Unknown",
+          email:d.personal?.email||"—", format:f, template:tpl, timestamp:Date.now()
+        })
+      }).catch(()=>{});
     } catch(err){ 
       console.error("Download error:", err);
       alert("Download failed: " + (err.message || "Unknown error. Please try PDF format."));
@@ -2084,18 +2176,11 @@ export default function App() {
                 ))}
               </div>
 
-              <div className="pay-form-label">Card Details</div>
-              <form onSubmit={handlePay}>
-                <div className="pay-row"><input className="pay-inp" value={card.name} onChange={e=>setCard(p=>({...p,name:e.target.value}))} placeholder="Cardholder Name"/></div>
-                <div className="pay-row"><input className="pay-inp" value={card.num} onChange={e=>setCard(p=>({...p,num:e.target.value}))} placeholder="1234 5678 9012 3456" maxLength={19}/></div>
-                <div className="pay-row">
-                  <input className="pay-inp" value={card.exp} onChange={e=>setCard(p=>({...p,exp:e.target.value}))} placeholder="MM / YY" maxLength={7}/>
-                  <input className="pay-inp" value={card.cvv} onChange={e=>setCard(p=>({...p,cvv:e.target.value}))} placeholder="CVV" maxLength={4}/>
-                </div>
-                <button type="submit" className="pay-submit">🔒 Pay ₹99 & Download</button>
-              </form>
+              <button className="pay-submit" onClick={handlePay} disabled={payLoading}>
+                {payLoading ? <><div className="spin-sm"/>Creating order...</> : <>🔒 Pay ₹99 via Razorpay</>}
+              </button>
               <div className="modal-cancel-row"><button onClick={()=>setShowDlModal(false)}>Cancel, go back</button></div>
-              <div className="modal-secure">🔒 Secured by Razorpay · 256-bit SSL · PCI Compliant</div>
+              <div className="modal-secure">🔒 Secured by Razorpay · UPI · Cards · Netbanking · Wallets</div>
             </div>
           </div>
         </div>

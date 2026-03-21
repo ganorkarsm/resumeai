@@ -19,7 +19,7 @@ export async function POST(req) {
 
     // Validate amount (security: never trust client-sent amount in production)
     // Always hardcode the price server-side
-    const FIXED_PRICE = 19900; // ₹199 in paise — change this for other products
+    const FIXED_PRICE = 9900; // ₹199 in paise — change this for other products
 
     const order = await razorpay.orders.create({
       amount:          FIXED_PRICE,
