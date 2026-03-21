@@ -29,7 +29,7 @@ const TESTIMONIALS = [
 const FEATURES = [
   { icon: "🤖", title: "AI-Powered Writing", desc: "Claude AI rewrites your bullet points with action verbs, adds real metrics, and optimizes every word for ATS systems automatically." },
   { icon: "📊", title: "ATS Score Analysis", desc: "See exactly how your resume scores against the same ATS systems used by TCS, Infosys, Wipro, Amazon, and 90% of top Indian employers." },
-  { icon: "🎨", title: "5 Professional Templates", desc: "Modern, Corporate, Simple, Elegant, and Creative — each designed by professionals for different industries and career stages." },
+  { icon: "🎨", title: "10 Professional Templates", desc: "Modern, Corporate, Elegant, Creative, Teal, Dark, Minimal and more — each designed for different industries and career stages." },
   { icon: "💡", title: "Smart Suggestions", desc: "Get AI-powered suggestions with one-click auto-apply. Add missing keywords, strengthen your summary, and quantify achievements instantly." },
   { icon: "📄", title: "PDF & Word Download", desc: "Download in both PDF (ATS-friendly) and Word (.docx editable) formats. Both included in your ₹99 one-time payment." },
   { icon: "🔒", title: "Secure Razorpay Payment", desc: "Pay securely via UPI, cards, netbanking, or wallets. One-time ₹99 payment — no subscription, no hidden charges, ever." },
@@ -63,7 +63,7 @@ export default function LandingPage() {
     setContactStatus("sending");
     // Send to a simple mailto or formspree endpoint
     try {
-      const res = await fetch("https://formspree.io/f/mbdzwaok", {
+      const res = await fetch("https://formspree.io/f/YOUR_FORMSPREE_ID", {
         method:"POST",
         headers:{"Content-Type":"application/json","Accept":"application/json"},
         body: JSON.stringify({
@@ -238,14 +238,33 @@ export default function LandingPage() {
 
         /* TEMPLATES SHOWCASE */
         .templates-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-top: 48px; }
+        @media(max-width:1100px){.templates-grid{grid-template-columns:repeat(5,1fr)}}
         @media(max-width:900px){.templates-grid{grid-template-columns:repeat(3,1fr)}}
         @media(max-width:600px){.templates-grid{grid-template-columns:1fr 1fr}}
         .template-card { border: 2px solid var(--border); border-radius: 12px; overflow: hidden; transition: all 0.2s; cursor: pointer; }
         .template-card:hover { border-color: var(--primary); transform: translateY(-4px); box-shadow: 0 12px 32px rgba(37,99,235,0.15); }
-        .template-thumb { height: 140px; position: relative; overflow: hidden; }
-        .template-label { padding: 12px; }
-        .template-name { font-size: 13px; font-weight: 800; color: var(--ink); margin-bottom: 2px; }
-        .template-tag { font-size: 10px; color: var(--ink3); text-transform: uppercase; letter-spacing: 0.5px; }
+        .template-thumb { height: 120px; position: relative; overflow: hidden; }
+        .template-label { padding: 10px 12px; }
+        .template-name { font-size: 12px; font-weight: 800; color: var(--ink); margin-bottom: 2px; }
+        .template-tag { font-size: 9px; color: var(--ink3); text-transform: uppercase; letter-spacing: 0.5px; }
+        /* existing 5 */
+        .t-modern { background: linear-gradient(135deg,#1e3a5f,#2563EB); padding: 14px; display: flex; flex-direction: column; gap: 5px; }
+        .t-corp { background: #fff; border-top: 4px solid #1e3a5f; padding: 14px; display: flex; flex-direction: column; gap: 5px; }
+        .t-simple { background: #fff; padding: 14px; display: flex; flex-direction: column; gap: 5px; border-left: 3px solid #e2e8f0; }
+        .t-elegant { background: #1a1a2e; padding: 14px; display: flex; flex-direction: column; gap: 5px; }
+        .t-creative { background: linear-gradient(135deg,#7C3AED,#C026D3); padding: 14px; display: flex; flex-direction: column; gap: 5px; }
+        /* new 5 */
+        .t-teal { background: linear-gradient(135deg,#0f766e,#14b8a6); padding: 14px; display: flex; flex-direction: column; gap: 5px; }
+        .t-dark { background: #0f172a; padding: 14px; display: flex; flex-direction: column; gap: 5px; border-bottom: 2px solid #3b82f6; }
+        .t-orange { background: #fff; border-top: 5px solid #ea580c; padding: 14px; display: flex; flex-direction: column; gap: 5px; }
+        .t-minimal { background: #fff; border-bottom: 2px solid #111; padding: 14px; display: flex; flex-direction: column; gap: 5px; }
+        .t-rose { background: linear-gradient(135deg,#be185d,#e11d48); padding: 14px; display: flex; flex-direction: column; gap: 5px; }
+        /* bars */
+        .t-bar { height: 5px; border-radius: 3px; margin-bottom: 2px; }
+        .t-bar-w { background: rgba(255,255,255,0.85); }
+        .t-bar-wl { background: rgba(255,255,255,0.35); }
+        .t-bar-d { background: rgba(0,0,0,0.15); }
+        .t-bar-g { background: #B7860D; }
 
         /* TESTIMONIALS */
         .testimonials-wrap { margin-top: 56px; position: relative; }
@@ -453,16 +472,21 @@ export default function LandingPage() {
       {/* TEMPLATES */}
       <section className="section" id="templates">
         <div className="section-inner">
-          <div className="section-tag">5 Templates</div>
+          <div className="section-tag">10 Templates</div>
           <h2 className="section-title">Pick Your Perfect<br /><em>Professional Look</em></h2>
           <p className="section-sub">From corporate banking roles to creative design positions — we have a template for every career path.</p>
-          <div className="templates-grid">
+          <div className="templates-grid" style={{gridTemplateColumns:"repeat(5,1fr)",gap:16}}>
             {[
-              { name: "Modern", tag: "Most Popular", cls: "t-modern", bars: [{ w: "60%", c: "t-bar-w" }, { w: "40%", c: "t-bar-wl" }, { w: "80%", c: "t-bar-wl" }, { w: "55%", c: "t-bar-wl" }] },
-              { name: "Corporate", tag: "Professional", cls: "t-corp", bars: [{ w: "55%", c: "t-bar-d" }, { w: "35%", c: "t-bar-d" }, { w: "80%", c: "t-bar-d" }, { w: "65%", c: "t-bar-d" }] },
-              { name: "Simple", tag: "Clean & ATS", cls: "t-simple", bars: [{ w: "50%", c: "t-bar-d" }, { w: "30%", c: "t-bar-d" }, { w: "85%", c: "t-bar-d" }, { w: "60%", c: "t-bar-d" }] },
-              { name: "Elegant", tag: "Premium", cls: "t-elegant", bars: [{ w: "55%", c: "t-bar-w" }, { w: "35%", c: "t-bar-g" }, { w: "75%", c: "t-bar-wl" }, { w: "50%", c: "t-bar-wl" }] },
-              { name: "Creative", tag: "Bold & Modern", cls: "t-creative", bars: [{ w: "60%", c: "t-bar-w" }, { w: "40%", c: "t-bar-wl" }, { w: "80%", c: "t-bar-wl" }, { w: "55%", c: "t-bar-wl" }] },
+              { name:"Modern",    tag:"Most Popular",  cls:"t-modern",   bars:[{w:"60%",c:"t-bar-w"},{w:"40%",c:"t-bar-wl"},{w:"80%",c:"t-bar-wl"},{w:"55%",c:"t-bar-wl"}] },
+              { name:"Corporate", tag:"Professional",  cls:"t-corp",     bars:[{w:"55%",c:"t-bar-d"},{w:"35%",c:"t-bar-d"},{w:"80%",c:"t-bar-d"},{w:"65%",c:"t-bar-d"}] },
+              { name:"Simple",    tag:"Clean & ATS",   cls:"t-simple",   bars:[{w:"50%",c:"t-bar-d"},{w:"30%",c:"t-bar-d"},{w:"85%",c:"t-bar-d"},{w:"60%",c:"t-bar-d"}] },
+              { name:"Elegant",   tag:"Premium",       cls:"t-elegant",  bars:[{w:"55%",c:"t-bar-w"},{w:"35%",c:"t-bar-g"},{w:"75%",c:"t-bar-wl"},{w:"50%",c:"t-bar-wl"}] },
+              { name:"Creative",  tag:"Bold & Modern", cls:"t-creative", bars:[{w:"60%",c:"t-bar-w"},{w:"40%",c:"t-bar-wl"},{w:"80%",c:"t-bar-wl"},{w:"55%",c:"t-bar-wl"}] },
+              { name:"Teal",      tag:"Fresh",         cls:"t-teal",     bars:[{w:"60%",c:"t-bar-w"},{w:"40%",c:"t-bar-wl"},{w:"75%",c:"t-bar-wl"},{w:"50%",c:"t-bar-wl"}] },
+              { name:"Dark",      tag:"Tech",          cls:"t-dark",     bars:[{w:"55%",c:"t-bar-w"},{w:"35%",c:"t-bar-wl"},{w:"80%",c:"t-bar-wl"},{w:"60%",c:"t-bar-wl"}] },
+              { name:"Orange",    tag:"Vibrant",       cls:"t-orange",   bars:[{w:"50%",c:"t-bar-w"},{w:"30%",c:"t-bar-wl"},{w:"85%",c:"t-bar-wl"},{w:"55%",c:"t-bar-wl"}] },
+              { name:"Minimal",   tag:"Ultra Clean",   cls:"t-minimal",  bars:[{w:"55%",c:"t-bar-d"},{w:"35%",c:"t-bar-d"},{w:"75%",c:"t-bar-d"},{w:"60%",c:"t-bar-d"}] },
+              { name:"Rose",      tag:"Creative",      cls:"t-rose",     bars:[{w:"60%",c:"t-bar-w"},{w:"40%",c:"t-bar-wl"},{w:"80%",c:"t-bar-wl"},{w:"50%",c:"t-bar-wl"}] },
             ].map((t, i) => (
               <div key={i} className="template-card">
                 <div className="template-thumb">
@@ -478,7 +502,7 @@ export default function LandingPage() {
             ))}
           </div>
           <div style={{ textAlign: "center", marginTop: 40 }}>
-            <Link href="/builder" className="btn-primary">Try All Templates Free →</Link>
+            <Link href="/builder" className="btn-primary">Try All 10 Templates Free →</Link>
           </div>
         </div>
       </section>
@@ -531,7 +555,7 @@ export default function LandingPage() {
                   "AI-powered resume enhancement (Claude AI)",
                   "ATS score analysis with detailed feedback",
                   "4 smart suggestions with auto-apply",
-                  "5 professional templates to choose from",
+                  "10 professional templates to choose from",
                   "Download as PDF (ATS-friendly)",
                   "Download as Word (.docx — fully editable)",
                   "Secure payment via Razorpay (UPI, cards, wallets)",
@@ -644,15 +668,11 @@ export default function LandingPage() {
 
                 {contactStatus==="error" && (
                   <p style={{color:"#dc2626",fontSize:13,textAlign:"center"}}>
-                    Something went wrong. Please email us directly at <strong>support@resumepro.in</strong>
+                    Something went wrong. Please email us directly at <strong>shrikantganorkar5@gmail.com</strong>
                   </p>
                 )}
               </form>
             )}
-          </div>
-
-          <div style={{textAlign:"center",marginTop:20,color:"#94a3b8",fontSize:13}}>
-            Or email us directly at <a href="mailto:support@resumepro.in" style={{color:"#2563EB",fontWeight:600}}>support@resumepro.in</a>
           </div>
         </div>
       </section>
