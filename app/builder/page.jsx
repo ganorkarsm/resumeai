@@ -1654,8 +1654,13 @@ export default function App() {
       if(!order.success) throw new Error(order.error || "Could not create order");
 
       // Step 2: Open Razorpay checkout
+      const rzpKey = order.key_id || "";
+      if(!rzpKey) {
+        throw new Error("Razorpay key missing from server response. Please check RAZORPAY_KEY_ID env var in Vercel.");
+      }
+      console.log("Razorpay key prefix:", rzpKey.substring(0,10), "Order:", order.order_id);
       const options = {
-        key: order.key_id, // returned from backend — never expose secret on frontend
+        key: rzpKey,
         amount: order.amount,
         currency: order.currency,
         name: "ResumePro",
