@@ -11,9 +11,9 @@ export const metadata = {
   },
 };
 
-// Replace G-D7DKYDK140 below with your actual Google Analytics ID (e.g. G-XXXXXXXXXX)
+// Replace GA_MEASUREMENT_ID below with your actual Google Analytics ID (e.g. G-XXXXXXXXXX)
 // Get it free at: https://analytics.google.com → Admin → Create Property
-const GA_ID = "G-D7DKYDK140";
+const GA_ID = "GA_MEASUREMENT_ID";
 
 export default function RootLayout({ children }) {
   return (
@@ -25,8 +25,8 @@ export default function RootLayout({ children }) {
           href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,300;1,9..144,700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@400;500&display=swap"
           rel="stylesheet"
         />
-        {/* Razorpay */}
-        <script src="https://checkout.razorpay.com/v1/checkout.js" async />
+        {/* Razorpay — no async, must be ready before user clicks pay */}
+        <script src="https://checkout.razorpay.com/v1/checkout.js" />
         {/* Google Analytics */}
         <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} />
         <script dangerouslySetInnerHTML={{ __html: `

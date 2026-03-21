@@ -1533,12 +1533,31 @@ export default function App() {
   const handlePay = async () => {
     setPayLoading(true);
     try {
+      // Wait for Razorpay script to load (up to 5s)
+      let waited = 0;
+      while(!window.Razorpay && waited < 5000) {
+        await new Promise(r => setTimeout(r, 300));
+        waited += 300;
+      }
+      if(!window.Razorpay) {
+        // Try loading it dynamically as fallback
+        await new Promise((resolve, reject) => {
+          const s = document.createElement("script");
+          s.src = "https://checkout.razorpay.com/v1/checkout.js";
+          s.onload = resolve;
+          s.onerror = reject;
+          document.head.appendChild(s);
+        });
+        await new Promise(r => setTimeout(r, 500));
+      }
+      if(!window.Razorpay) throw new Error("Razorpay failed to load. Please refresh and try again.");
+
       // Step 1: Create order on backend
       const orderRes = await fetch("/api/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          amount: 9900, // ₹99 in paise
+          amount: 9900,
           notes: { template: tpl, user: data.personal.name || "anonymous" }
         })
       });
@@ -1554,14 +1573,14 @@ export default function App() {
         description: "AI Resume Download — PDF + Word",
         order_id: order.order_id,
         prefill: {
-          name:  data.personal.name  || "",
-          email: data.personal.email || "",
+          name:    data.personal.name  || "",
+          email:   data.personal.email || "",
           contact: data.personal.phone || "",
         },
         theme: { color: "#2563EB" },
         handler: async (response) => {
-          // Step 3: Verify payment on backend
           try {
+            // Step 3: Verify payment on backend
             const verifyRes = await fetch("/api/verify-payment", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -1573,7 +1592,6 @@ export default function App() {
             });
             const verify = await verifyRes.json();
             if(verify.verified) {
-              // Payment genuine — unlock download
               setShowDlModal(false);
               setShowSuccess(true);
               setPaid(true);
@@ -1581,29 +1599,21 @@ export default function App() {
               fetch("/api/notify", {
                 method:"POST", headers:{"Content-Type":"application/json"},
                 body: JSON.stringify({
-                  type: "payment",
-                  name: data.personal.name || "Unknown",
-                  email: data.personal.email || "—",
-                  amount: 99,
-                  paymentId: response.razorpay_payment_id,
-                  timestamp: Date.now()
+                  type:"payment", name:data.personal.name||"Unknown",
+                  email:data.personal.email||"—", amount:99,
+                  paymentId:response.razorpay_payment_id, timestamp:Date.now()
                 })
               }).catch(()=>{});
             } else {
               alert("Payment verification failed. Please contact support.");
             }
           } catch(err) {
-            alert("Payment verification error: " + err.message);
+            alert("Verification error: " + err.message);
           }
         },
-        modal: {
-          ondismiss: () => { setPayLoading(false); }
-        }
+        modal: { ondismiss: () => setPayLoading(false) }
       };
 
-      if(!window.Razorpay) {
-        throw new Error("Razorpay not loaded. Please refresh and try again.");
-      }
       const rzp = new window.Razorpay(options);
       rzp.on("payment.failed", (resp) => {
         alert("Payment failed: " + (resp.error?.description || "Unknown error"));
@@ -1613,7 +1623,6 @@ export default function App() {
     } catch(err) {
       console.error("Payment error:", err);
       alert("Payment error: " + err.message);
-    } finally {
       setPayLoading(false);
     }
   };
