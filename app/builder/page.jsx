@@ -1617,31 +1617,41 @@ export default function App() {
     setApplied(p=>({...p,[s.id]:true}));
   };
 
-  /* PAY */
   /* PAY — Real Razorpay */
   const handlePay = async () => {
     setPayLoading(true);
     try {
-      // Wait for Razorpay script to load (up to 5s)
-      let waited = 0;
-      while(!window.Razorpay && waited < 5000) {
-        await new Promise(r => setTimeout(r, 300));
-        waited += 300;
-      }
-      if(!window.Razorpay) {
-        // Try loading it dynamically as fallback
-        await new Promise((resolve, reject) => {
-          const s = document.createElement("script");
-          s.src = "https://checkout.razorpay.com/v1/checkout.js";
-          s.onload = resolve;
-          s.onerror = reject;
-          document.head.appendChild(s);
-        });
-        await new Promise(r => setTimeout(r, 500));
-      }
-      if(!window.Razorpay) throw new Error("Razorpay failed to load. Please refresh and try again.");
+      // Step 1: Ensure Razorpay is loaded FIRST before anything else
+      const loadRazorpay = () => new Promise((resolve, reject) => {
+        // Already loaded
+        if(window.Razorpay) { resolve(); return; }
+        // Check if script tag already exists
+        const existing = document.querySelector('script[src*="razorpay"]');
+        if(existing) {
+          // Script exists but not loaded yet — wait for it
+          existing.addEventListener('load', resolve);
+          existing.addEventListener('error', reject);
+          return;
+        }
+        // Load fresh
+        const s = document.createElement("script");
+        s.src = "https://checkout.razorpay.com/v1/checkout.js";
+        s.async = false; // synchronous load
+        s.onload = () => { setTimeout(resolve, 200); }; // small delay for init
+        s.onerror = () => reject(new Error("Failed to load Razorpay"));
+        document.head.appendChild(s);
+      });
 
-      // Step 1: Create order on backend
+      await loadRazorpay();
+
+      // Extra wait to ensure Razorpay fully initializes
+      await new Promise(r => setTimeout(r, 300));
+
+      if(!window.Razorpay) {
+        throw new Error("Razorpay not available. Please refresh the page and try again.");
+      }
+
+      // Step 2: Create order on backend
       const orderRes = await fetch("/api/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -1653,12 +1663,10 @@ export default function App() {
       const order = await orderRes.json();
       if(!order.success) throw new Error(order.error || "Could not create order");
 
-      // Step 2: Open Razorpay checkout
       const rzpKey = order.key_id || "";
-      if(!rzpKey) {
-        throw new Error("Razorpay key missing from server response. Please check RAZORPAY_KEY_ID env var in Vercel.");
-      }
-      console.log("Razorpay key prefix:", rzpKey.substring(0,10), "Order:", order.order_id);
+      if(!rzpKey) throw new Error("Payment configuration error. Please contact support.");
+
+      // Step 3: Open Razorpay checkout
       const options = {
         key: rzpKey,
         amount: order.amount,
@@ -1674,7 +1682,6 @@ export default function App() {
         theme: { color: "#2563EB" },
         handler: async (response) => {
           try {
-            // Step 3: Verify payment on backend
             const verifyRes = await fetch("/api/verify-payment", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -1689,7 +1696,6 @@ export default function App() {
               setShowDlModal(false);
               setShowSuccess(true);
               setPaid(true);
-              // Notify owner
               fetch("/api/notify", {
                 method:"POST", headers:{"Content-Type":"application/json"},
                 body: JSON.stringify({
