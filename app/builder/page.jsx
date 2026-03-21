@@ -84,7 +84,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#F0F2F5;color:#1a1d23
 .tpl-card{border:2px solid var(--border);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:all 0.2s;background:#fff;position:relative}
 .tpl-card:hover{border-color:var(--primary);transform:translateY(-2px);box-shadow:var(--shadow)}
 .tpl-card.active{border-color:var(--primary);box-shadow:0 0 0 3px rgba(37,99,235,0.12)}
-.tpl-card-thumb{height:90px;overflow:hidden;position:relative}
+.tpl-card-thumb{height:90px;overflow:hidden;position:relative;width:100%;display:block}
 .tpl-card-label{padding:8px 10px;display:flex;align-items:center;justify-content:space-between}
 .tpl-card-name{font-size:11px;font-weight:700;color:var(--ink)}
 .tpl-card-tag{font-size:9px;color:var(--ink3);letter-spacing:0.5px;text-transform:uppercase}
@@ -705,6 +705,55 @@ function Thumb({ id }) {
       <div className="thumb-creative-body">
         <div className="thumb-creative-sidebar">{[80,60,40,70,50].map((w,i)=><div key={i} className="thumb-line" style={{width:w+'%'}}/>)}</div>
         <div className="thumb-creative-main">{[90,70,60,80,50,75,40].map((w,i)=><div key={i} className="thumb-line" style={{width:w+'%',opacity:0.6}}/>)}</div>
+      </div>
+    </div>
+  );
+  // ── NEW 5 TEMPLATES ──
+  if (id === "teal") return (
+    <div style={{width:'100%',height:'100%',background:'linear-gradient(135deg,#0f766e,#14b8a6)',display:'flex',flexDirection:'column',padding:'8px 10px',gap:3,overflow:'hidden'}}>
+      <div style={{height:7,background:'rgba(255,255,255,0.9)',borderRadius:2,width:'55%'}}/>
+      <div style={{height:4,background:'rgba(255,255,255,0.4)',borderRadius:2,width:'35%'}}/>
+      <div style={{display:'grid',gridTemplateColumns:'1fr 2fr',gap:4,flex:1,marginTop:4}}>
+        <div style={{background:'rgba(255,255,255,0.1)',borderRadius:2,padding:'4px 5px',display:'flex',flexDirection:'column',gap:2}}>{[80,60,70,50,65].map((w,i)=><div key={i} style={{height:3,background:'rgba(255,255,255,0.25)',borderRadius:1,width:w+'%'}}/>)}</div>
+        <div style={{display:'flex',flexDirection:'column',gap:2}}>{[90,70,60,80,50,75,40].map((w,i)=><div key={i} style={{height:3,background:'rgba(255,255,255,0.2)',borderRadius:1,width:w+'%'}}/>)}</div>
+      </div>
+    </div>
+  );
+  if (id === "dark") return (
+    <div style={{width:'100%',height:'100%',background:'#0f172a',display:'flex',flexDirection:'column',padding:'8px 10px',gap:3,overflow:'hidden'}}>
+      <div style={{height:7,background:'rgba(241,245,249,0.9)',borderRadius:2,width:'55%'}}/>
+      <div style={{height:4,background:'rgba(100,116,139,0.6)',borderRadius:2,width:'35%'}}/>
+      <div style={{display:'grid',gridTemplateColumns:'1fr 2fr',gap:4,flex:1,marginTop:4}}>
+        <div style={{background:'#1e293b',borderRadius:2,padding:'4px 5px',display:'flex',flexDirection:'column',gap:2}}>{[80,60,70,50,65].map((w,i)=><div key={i} style={{height:3,background:i===0?'#3b82f6':'#334155',borderRadius:1,width:w+'%'}}/>)}</div>
+        <div style={{display:'flex',flexDirection:'column',gap:2}}>{[90,70,60,80,50,75,40].map((w,i)=><div key={i} style={{height:3,background:'#1e293b',borderRadius:1,width:w+'%'}}/>)}</div>
+      </div>
+    </div>
+  );
+  if (id === "orange") return (
+    <div style={{width:'100%',height:'100%',background:'#fff',borderTop:'4px solid #ea580c',display:'flex',flexDirection:'column',padding:'8px 10px',gap:3,overflow:'hidden'}}>
+      <div style={{height:7,background:'#ea580c',borderRadius:2,width:'55%'}}/>
+      <div style={{height:4,background:'#fed7aa',borderRadius:2,width:'35%'}}/>
+      <div style={{display:'grid',gridTemplateColumns:'1fr 2fr',gap:4,flex:1,marginTop:4}}>
+        <div style={{display:'flex',flexDirection:'column',gap:2}}>{[80,60,70,50,65].map((w,i)=><div key={i} style={{height:3,background:i===0?'#ea580c':'#e2e8f0',borderRadius:1,width:w+'%'}}/>)}</div>
+        <div style={{display:'flex',flexDirection:'column',gap:2}}>{[90,70,60,80,50,75,40].map((w,i)=><div key={i} style={{height:3,background:'#e2e8f0',borderRadius:1,width:w+'%'}}/>)}</div>
+      </div>
+    </div>
+  );
+  if (id === "minimal") return (
+    <div style={{width:'100%',height:'100%',background:'#fff',display:'flex',flexDirection:'column',padding:'8px 10px',overflow:'hidden'}}>
+      <div style={{height:8,background:'#111',borderRadius:2,width:'50%',marginBottom:3}}/>
+      <div style={{height:3,background:'#666',borderRadius:1,width:'30%',marginBottom:3}}/>
+      <div style={{height:1,background:'#111',marginBottom:5}}/>
+      <div style={{display:'flex',flexDirection:'column',gap:2,flex:1}}>{[90,70,60,80,50,75,40,65].map((w,i)=><div key={i} style={{height:3,background:'#e2e8f0',borderRadius:1,width:w+'%'}}/>)}</div>
+    </div>
+  );
+  if (id === "rose") return (
+    <div style={{width:'100%',height:'100%',background:'linear-gradient(135deg,#be185d,#e11d48)',display:'flex',flexDirection:'column',padding:'8px 10px',gap:3,overflow:'hidden'}}>
+      <div style={{height:7,background:'rgba(255,255,255,0.9)',borderRadius:2,width:'55%'}}/>
+      <div style={{height:4,background:'rgba(255,255,255,0.4)',borderRadius:2,width:'35%'}}/>
+      <div style={{display:'grid',gridTemplateColumns:'1fr 2fr',gap:4,flex:1,marginTop:4}}>
+        <div style={{background:'rgba(255,255,255,0.1)',borderRadius:2,padding:'4px 5px',display:'flex',flexDirection:'column',gap:2}}>{[80,60,70,50,65].map((w,i)=><div key={i} style={{height:3,background:'rgba(255,255,255,0.25)',borderRadius:1,width:w+'%'}}/>)}</div>
+        <div style={{display:'flex',flexDirection:'column',gap:2}}>{[90,70,60,80,50,75,40].map((w,i)=><div key={i} style={{height:3,background:'rgba(255,255,255,0.2)',borderRadius:1,width:w+'%'}}/>)}</div>
       </div>
     </div>
   );
